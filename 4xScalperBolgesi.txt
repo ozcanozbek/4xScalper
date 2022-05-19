@@ -1,0 +1,45 @@
+//@version=5
+indicator(title='4xScalper Bölgesi V1.1.1', shorttitle='4xScalperBolgesi')
+
+acBolgeCizgileri = input(defval = false, title = 'Bölge Çizgileri Gözüksün mü?')  
+
+//SATIM ÇİZGİSİ
+acCAS = input.int(defval = 80, title = 'Çok Aşırı Satım Çizgisi % Değeri', group="Rsi/Ema +3 Kanal Ayarları")   
+acAS = input.int(defval = 70, title = 'Aşırı Satım Çizgisi % Değeri', group="Rsi/Ema +2 Kanal Ayarları")   
+acS = input.int(defval = 60, title = 'Satım Çizgisi % Değeri', group="Rsi/Ema +1 Kanal Ayarları")   
+
+//ALIM ÇİZGİSİ
+acA = input.int(defval = 45, title = 'Alım Çizgisi % Değeri', group="Rsi/Ema -1 Kanal Ayarları")   
+acAA = input.int(defval = 30, title = 'Aşırı Alım Çizgisi % Değeri', group="Rsi/Ema -2 Kanal Ayarları")   
+acCAA = input.int(defval = 20, title = 'Çok Aşırı Alım Çizgisi % Değeri', group="Rsi/Ema -3 Kanal Ayarları")   
+
+myTf = timeframe.period
+myClose = request.security(syminfo.tickerid, myTf, close)
+
+myRsiD = input.int(14, title='RSI Değeri', group="Rsi/Ema Genel Ayarları")
+myEmaD = input.int(12, title='Ema Değeri', group="Rsi/Ema Genel Ayarları")
+
+myRsi = ta.rsi(myClose,myRsiD)
+myEma = ta.ema(myRsi, myEmaD)
+
+rs1 =  plot(myRsi, title="myRSI", color=color.new(color.yellow,0), offset=0, linewidth=2)
+ema1 = plot(myEma, title="myEMA", color=color.new(color.white,0), offset=0, linewidth=2)
+
+fill(rs1, ema1, title = 'Trend Bölgesi', color=myRsi >= myEma ? color.new(color.lime, 0) : myRsi>=myRsi[1] ? color.new(color.orange, 0) : color.new(color.red, 0))
+
+//SATIM BÖLGESİ
+upbandH = hline(acCAS, "Çok Aşırı Satım Bölgesi", color=color.new(color.lime, acBolgeCizgileri ? 0 : 100), linewidth=2)
+upband = hline(acAS, "Aşırı Satım Bölgesi", color=color.new(color.blue, acBolgeCizgileri ? 0 : 100), linewidth=2)
+bullzoneband = hline(acS, "Satım Bölgesi", color=color.new(color.white, acBolgeCizgileri ? 0 : 100), linewidth=2)
+fill(upband, bullzoneband, color=color.new(color.red,40), title = 'Satım Bölgesi')
+fill(upband, upbandH, color=color.new(color.red,60), title = 'Aşırı Satım Bölgesi')
+
+//ALIM BÖLGESİ
+bearzoneband = hline(acA, "Alım Bölgesi", color=color.new(color.yellow, acBolgeCizgileri ? 0 : 100), linewidth=2)
+downband = hline(acAA, "Aşırı Alım Bölgesi", color=color.new(color.orange, acBolgeCizgileri ? 0 : 100), linewidth=2)
+downbandL = hline(acCAA, "Çok Aşırı Alım Bölgesi", color=color.new(color.red, acBolgeCizgileri ? 0 : 100), linewidth=2)
+fill(bearzoneband, downband, color=color.new(color.blue,60), title = 'Alım Bölgesi')
+fill(downband, downbandL, color=color.new(color.blue,80), title = 'Aşırı Alım Bölgesi')
+
+
+//BURADA BITTI
