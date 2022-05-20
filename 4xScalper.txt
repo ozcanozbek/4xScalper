@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.1.0", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
+indicator(title ="4xScalper - V1.1.2", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -62,6 +62,24 @@ acxMa50Cizgisi = input(defval = true, title = 'xMA50 Çizgisi Gözüksün mü?',
 acxMa100Cizgisi = input(defval = true, title = 'xMA100 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
 acxMa200Cizgisi = input(defval = true, title = 'xMA200 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
 
+
+//kama
+acKama = input(true, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
+
+
+Length = input.int(21, minval=1, group="Kama Ayarları")
+kama_col = input.color(color.new(#00bcd4, 0),'KAMA Renk',inline='col', group="Kama Ayarları")
+xPrice = close
+xvnoise = math.abs(xPrice - xPrice[1])
+nAMA = 0.0
+nfastend = 0.666
+nslowend = 0.0645
+nsignal = math.abs(xPrice - xPrice[Length])
+nnoise = math.sum(xvnoise, Length)
+nefratio = nnoise != 0 ? nsignal / nnoise : 0
+nsmooth = math.pow(nefratio * (nfastend - nslowend) + nslowend, 2)
+nAMA := nz(nAMA[1]) + nsmooth * (xPrice - nz(nAMA[1]))
+plot(acKama and nAMA ? nAMA : na , color=kama_col, title='KAMA',linewidth=3)
 
 
 
@@ -154,11 +172,6 @@ color_1 = vold1 ? cold1 : vold2 ? cold2 : vold3 ? cold3 : volu1 ? colu1 : volu2 
 
 barcolor(acMumRenk ? color_1 : na)
 
-// Pano Ayarları
-acFiboUA = input(defval = false, title = 'Fibo Üst Alt Fiyatları Panosu Gözüksün mü?', group="Pano Ayarları")   
-acEtiket = input(defval = false, title = 'Fibo Al Sat Talimatları Panosu Gözüksün mü?', group="Pano Ayarları")   
-
-
 
 
 // RSI/EMA Genel
@@ -233,17 +246,17 @@ myL_2S = request.security(syminfo.tickerid, xMumKontrol(xReMum2), low)
 
 acRsiEmaLW_2S = input.int(defval = 5, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 2 Değerleri") 
 acRsiEma_2S = input(defval = false, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 2 Değerleri") 
-acREIsaretler_2S = input(defval = true, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 2 Değerleri") 
+acREIsaretler_2S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 2 Değerleri") 
 
 my4Y_2S = input.color(color.new(#00897B, 0)  , "Aşırı Alım Bölgesinde (zirvede) Yükselirken", group="Rsi/Ema 2 Değerleri") 
 my3Y_2S = input.color(color.new(color.green, 0), "Alım Bölgesinden (yüksekte) Yükselirken", group="Rsi/Ema 2 Değerleri") 
-my2Y_2S = input.color(color.new(#00bcd4, 100), "Orta Bölgesinden (ortada) Yükselirken", group="Rsi/Ema 2 Değerleri") 
-my1Y_2S = input.color(color.new(color.blue, 100), "Satım Bölgesinden (dipte) Yükselirken", group="Rsi/Ema 2 Değerleri") 
+my2Y_2S = input.color(color.new(#00bcd4, 0), "Orta Bölgesinden (ortada) Yükselirken", group="Rsi/Ema 2 Değerleri") 
+my1Y_2S = input.color(color.new(color.blue, 0), "Satım Bölgesinden (dipte) Yükselirken", group="Rsi/Ema 2 Değerleri") 
 
 my1D_2S = input.color(color.new(color.yellow, 0) , "Alım Bölgesinden (zirvede) Düşerken", group="Rsi/Ema 2 Değerleri") 
 my2D_2S = input.color(color.new(#ff9800, 0) , "Orta Bölgesinden (ortada) Düşerken", group="Rsi/Ema 2 Değerleri") 
-my3D_2S = input.color(color.new(color.red, 100) , "Satım Bölgesinden (dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
-my4D_2S = input.color(color.new(#880E4F, 100)  , "Aşırı Satım Bölgesinde (en dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
+my3D_2S = input.color(color.new(color.red, 0) , "Satım Bölgesinden (dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
+my4D_2S = input.color(color.new(#880E4F, 0)  , "Aşırı Satım Bölgesinde (en dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
 
 bolge4Y_2S =  myRsi_2S > acAS // >70
 bolge3Y_2S =  myRsi_2S > acS and myRsi_2S <= acAS //70/60
@@ -272,16 +285,16 @@ myL_3S = request.security(syminfo.tickerid, xMumKontrol(xReMum3), low)
 
 acRsiEmaLW_3S = input.int(defval = 7, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 3 Değerleri") 
 acRsiEma_3S = input(defval = false, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 3 Değerleri") 
-acREIsaretler_3S = input(defval = true, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 3 Değerleri") 
+acREIsaretler_3S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 3 Değerleri") 
 
 
-my4Y_3S = input.color(color.new(#00897B, 100)  , "Aşırı Alım Bölgesinde (zirvede) Yükselirken", group="Rsi/Ema 3 Değerleri") 
-my3Y_3S = input.color(color.new(color.green, 100), "Alım Bölgesinden (yüksekte) Yükselirken", group="Rsi/Ema 3 Değerleri") 
+my4Y_3S = input.color(color.new(#00897B, 0)  , "Aşırı Alım Bölgesinde (zirvede) Yükselirken", group="Rsi/Ema 3 Değerleri") 
+my3Y_3S = input.color(color.new(color.green, 0), "Alım Bölgesinden (yüksekte) Yükselirken", group="Rsi/Ema 3 Değerleri") 
 my2Y_3S = input.color(color.new(#00bcd4, 0), "Orta Bölgesinden (ortada) Yükselirken", group="Rsi/Ema 3 Değerleri") 
 my1Y_3S = input.color(color.new(color.blue, 0), "Satım Bölgesinden (dipte) Yükselirken", group="Rsi/Ema 3 Değerleri") 
 
-my1D_3S = input.color(color.new(color.yellow, 100) , "Alım Bölgesinden (zirvede) Düşerken", group="Rsi/Ema 3 Değerleri") 
-my2D_3S = input.color(color.new(#ff9800, 100) , "Orta Bölgesinden (ortada) Düşerken", group="Rsi/Ema 3 Değerleri") 
+my1D_3S = input.color(color.new(color.yellow, 0) , "Alım Bölgesinden (zirvede) Düşerken", group="Rsi/Ema 3 Değerleri") 
+my2D_3S = input.color(color.new(#ff9800, 0) , "Orta Bölgesinden (ortada) Düşerken", group="Rsi/Ema 3 Değerleri") 
 my3D_3S = input.color(color.new(color.red, 0) , "Satım Bölgesinden (dipte) Düşerken", group="Rsi/Ema 3 Değerleri") 
 my4D_3S = input.color(color.new(#880E4F, 0)  , "Aşırı Satım Bölgesinde (en dipte) Düşerken", group="Rsi/Ema 3 Değerleri") 
 
@@ -370,6 +383,118 @@ xMA_200 = xMaKontrol(xMaTip200, close, length8a)
 xMA_200Src = request.security(syminfo.tickerid,xMaMum200Src, xMA_200)
 xMA_200_Color_S = xMA_200Src >= xMA_200Src[1] ? xMA_200_Color :xMA_200_Color_koyu
 xMA_200_Plot = plot(xMA_200Src and acxMaCizgisi and acxMa200Cizgisi ? xMA_200Src : na , color=xMA_200_Color_S, linewidth=4, title='xMa200 Çizgisi')
+
+
+
+
+//BOYAMALAR 1
+
+acBoyama = input(defval = false, title = 'Boyama Gözüksün mü?', group="Boyama Bölümü")   
+
+string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="Boyama Bölümü")
+string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="Boyama Bölümü")
+
+myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="Boyama Bölümü") 
+myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="Boyama Bölümü") 
+
+float ba1 = switch boyaBir
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma1 = switch boyaBir
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+	
+ilk = plot(acBoyama and acxMaCizgisi ? ma1 : na, color = color.new(color.white, 100))
+
+float ba2 = switch boyaIki
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma2 = switch boyaIki
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+son = plot(acBoyama and acxMaCizgisi ? ma2 : na, color = color.new(color.white, 100))
+
+//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
+myBoya = ba1 >= ba2 ? myRenkBir : myRenkIki 
+fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, transp=75)
+
+
+//BOYAMALAR 2
+
+acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
+
+string boyaBir2 = input.string(defval = "xMA50", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="2. Boyama Bölümü")
+string boyaIki2 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="2. Boyama Bölümü")
+
+myRenkBir2 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
+myRenkIki2 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
+
+float ba12 = switch boyaBir2
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma12 = switch boyaBir2
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+	
+ilk2 = plot(acBoyama2 ? ma12 : na, color = color.new(color.white, 100))
+
+float ba22 = switch boyaIki2
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma22 = switch boyaIki2
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+son2 = plot(acBoyama2 ? ma22 : na, color = color.new(color.white, 100))
+
+//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
+myBoya2 = ba12 >= ba22 ? myRenkBir2 : myRenkIki2 
+fill(ilk2, son2 , title = 'İkinci Bölge', color = myBoya2, fillgaps = true, transp=75)
 
 
 
