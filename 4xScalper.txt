@@ -141,7 +141,6 @@ plot(line2000_2 and acFiboLines and acFlAlt ? line2000_2 : na, title='-1.000', c
 plot(line2272_2 and acFiboLines and acFlAlt ? line2272_2 : na, title='-1.272', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 
 
-
 //VBCB
 
 acMumRenk = input(true, title='Mumlar Hacime Göre Renklensin mi?', group="VBCB Ayarları")
@@ -495,5 +494,62 @@ son2 = plot(acBoyama2 ? ma22 : na, color = color.new(color.white, 100))
 //myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya2 = ba12 >= ba22 ? myRenkBir2 : myRenkIki2 
 fill(ilk2, son2 , title = 'İkinci Bölge', color = myBoya2, fillgaps = true, transp=75)
+
+
+//BOYAMALAR 3
+
+acBoyama3 = input(defval = false, title = 'Boyama Gözüksün mü?', group="3. Boyama Bölümü")   
+
+string boyaBir3 = input.string(defval = "xMA50", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="3. Boyama Bölümü")
+string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema"] , group="3. Boyama Bölümü")
+
+myRenkBir3 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="3. Boyama Bölümü") 
+myRenkIki3 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="3. Boyama Bölümü") 
+
+float ba13 = switch boyaBir3
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma13 = switch boyaBir3
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+	
+ilk3 = plot(acBoyama3 ? ma13 : na, color = color.new(color.white, 100))
+
+float ba23 = switch boyaIki3
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+float ma23 = switch boyaIki3
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema" => myRsiEmaLine_1S
+
+son3 = plot(acBoyama3 ? ma23 : na, color = color.new(color.white, 100))
+
+//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
+myBoya3 = ba13 >= ba23 ? myRenkBir3 : myRenkIki3 
+fill(ilk3, son3 , title = 'Üçüncü Bölge', color = myBoya3, fillgaps = true, transp=75)
+
+
 
 //BURADA BİTTİ
