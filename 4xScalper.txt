@@ -205,7 +205,7 @@ myL_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), low)
 
 acRsiEmaLW_1S = input.int(defval = 4, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
 acRsiEma_1S = input(defval = true, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
-//acREIsaretler_1S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
+acREIsaretler_1S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 
 
 my4Y_1S = input.color(color.new(#00897B, 0)  , "Aşırı Alım Bölgesinde (zirvede) Yükselirken", group="Rsi/Ema 1 Değerleri") 
@@ -320,7 +320,10 @@ myREcizgim_2S = plot(acRsiEma_2S ? myRsi_2S >= myEma_2S ? myH_2S : myL_2S : na, 
 myREcizgim_1S = plot(acRsiEma_1S ? myRsi_1S >= myEma_1S ? myH_1S : myL_1S : na, color=myRsiColorTek_1S, linewidth=acRsiEmaLW_1S, title='R/E 1 Cizgisi')
 
 
-//plotshape(acREIsaretler_1S, title ='R/E 1 İşaret', text='', style=shape.circle, location=location.bottom, color=myRsiColorTek_1S, offset=0, size=size.tiny)
+//plotshape(acREIsaretler_1S, title ='R/E 1 İşaret', text='', style=shape.flag, location=location.bottom, color=myRsiColorTek_1S, offset=0, size=size.tiny)
+plotshape(acREIsaretler_1S and myRsi_2S >= myEma_2S, title ='R/E 1 İşaret', text='', style=shape.triangleup, location=location.abovebar, color=myRsiColorY_1S, offset=0, size=size.small)
+plotshape(acREIsaretler_1S and myRsi_2S < myEma_2S, title ='R/E 1 İşaret', text='', style=shape.triangledown, location=location.belowbar, color=myRsiColorD_1S, offset=0, size=size.small)
+
 plotshape(acREIsaretler_2S , title ='R/E 2 İşaret', text='', style=shape.triangleup, location=location.top, color=myRsiColorTek_2S, offset=0, size=size.tiny)
 plotshape(acREIsaretler_3S, title ='R/E 3 İşaret', text='', style=shape.triangleup, location=location.bottom, color=myRsiColorTek_3S, offset=0, size=size.tiny)
 
