@@ -1,5 +1,5 @@
 //@version=5
-indicator(title='4xScalper Bölgesi V1.1.1', shorttitle='4xScalperBolgesi')
+indicator(title='4xScalper Bölgesi V1.1.1', shorttitle='4xScalperBolgesi', overlay=false, timeframe="", timeframe_gaps=true)
 
 acBolgeCizgileri = input(defval = false, title = 'Bölge Çizgileri Gözüksün mü?')  
 
