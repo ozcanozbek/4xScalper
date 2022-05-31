@@ -13,7 +13,9 @@ xMumKontrol(xMumTip)=>
         "4 Saat" => "240" 
         "1 Gün" => "D"
         "1 Hafta" => "W"
+        "3 Hafta" => "3W"
         "1 Ay" => "M"
+        "5 Hafta" => "5W"
         => str.tostring(timeframe.period)
         
 
@@ -51,7 +53,9 @@ xMaMumKontrol(xMaMumTip)=>
         "4 Saat" => "240" 
         "1 Gün" => "D"
         "1 Hafta" => "W"
+        "3 Hafta" => "3W"
         "1 Ay" => "M"
+        "5 Hafta" => "5W"
         => str.tostring(timeframe.period)
         
 src = input(close, 'Source', group="Genel Ayarlar")
@@ -192,10 +196,10 @@ acCAA = input.int(defval = 20, title = 'Çok Aşırı Alım Çizgisi % Değeri',
 
 
 //TimeFrame
-string xReMum1 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 1 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="Rsi/Ema 1 Değerleri")
-string xReMum2 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 2 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="Rsi/Ema 2 Değerleri")
-string xReMum3 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 3 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="Rsi/Ema 3 Değerleri")
-string xReMum4 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 4 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="Rsi/Ema 4 Değerleri")
+string xReMum1 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 1 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Rsi/Ema 1 Değerleri")
+string xReMum2 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 2 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Rsi/Ema 2 Değerleri")
+string xReMum3 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 3 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Rsi/Ema 3 Değerleri")
+string xReMum4 = input.timeframe(defval = "Grafik", title = "Rsi/Ema 4 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Rsi/Ema 4 Değerleri")
 
 
 // R/E 1
@@ -382,10 +386,10 @@ plotshape(acREIsaretler_3S, title ='R/E 3 İşaret', text='', style=shape.triang
 //xMA
 
 //TimeFrame
-string xMAMum21 = input.timeframe(defval = "Grafik", title = "xMA21 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="xMA21 Değerleri")
-string xMAMum50 = input.timeframe(defval = "Grafik", title = "xMA50 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="xMA50 Değerleri")
-string xMAMum100 = input.timeframe(defval = "Grafik", title = "xMA100 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="xMA100 Değerleri")
-string xMAMum200 = input.timeframe(defval = "Grafik", title = "xMA200 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "1 Ay"] , group="xMA200 Değerleri")
+string xMAMum21 = input.timeframe(defval = "Grafik", title = "xMA21 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="xMA21 Değerleri")
+string xMAMum50 = input.timeframe(defval = "Grafik", title = "xMA50 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="xMA50 Değerleri")
+string xMAMum100 = input.timeframe(defval = "Grafik", title = "xMA100 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="xMA100 Değerleri")
+string xMAMum200 = input.timeframe(defval = "Grafik", title = "xMA200 Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="xMA200 Değerleri")
 
         
 // xMA Çizgi ve Kesişmeleri
@@ -456,8 +460,8 @@ fill(bolP1, bolP2, title='Bolinger Bölgesi', transp=100)
 //BOYAMALAR 1
 acBoyama = input(defval = false, title = 'Boyama Gözüksün mü?', group="1. Boyama Bölümü")   
 
-string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="1. Boyama Bölümü")
-string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="1. Boyama Bölümü")
+string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="1. Boyama Bölümü")
+string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="1. Boyama Bölümü")
 
 myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
 myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
@@ -473,6 +477,8 @@ float ba1 = switch boyaBir
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma1 = switch boyaBir
 	"xMA21" => xMA_21Src
@@ -485,6 +491,8 @@ float ma1 = switch boyaBir
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 	
 ilk = plot(acBoyama ? ma1 : na, color = color.new(color.white, 100))
 
@@ -499,6 +507,8 @@ float ba2 = switch boyaIki
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma2 = switch boyaIki
 	"xMA21" => xMA_21Src
@@ -511,6 +521,8 @@ float ma2 = switch boyaIki
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 son = plot(acBoyama ? ma2 : na, color = color.new(color.white, 100))
 
@@ -523,8 +535,8 @@ fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, trans
 
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
 
-string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="2. Boyama Bölümü")
-string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="2. Boyama Bölümü")
+string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="2. Boyama Bölümü")
+string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="2. Boyama Bölümü")
 
 myRenkBir2 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
 myRenkIki2 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
@@ -540,6 +552,8 @@ float ba12 = switch boyaBir2
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma12 = switch boyaBir2
 	"xMA21" => xMA_21Src
@@ -552,6 +566,8 @@ float ma12 = switch boyaBir2
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 	
 ilk2 = plot(acBoyama2 ? ma12 : na, color = color.new(color.white, 100))
 
@@ -566,6 +582,8 @@ float ba22 = switch boyaIki2
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma22 = switch boyaIki2
 	"xMA21" => xMA_21Src
@@ -578,6 +596,8 @@ float ma22 = switch boyaIki2
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 son2 = plot(acBoyama2 ? ma22 : na, color = color.new(color.white, 100))
 
@@ -590,8 +610,8 @@ fill(ilk2, son2 , title = 'İkinci Bölge', color = myBoya2, fillgaps = true, tr
 
 acBoyama3 = input(defval = false, title = 'Boyama Gözüksün mü?', group="3. Boyama Bölümü")   
 
-string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="3. Boyama Bölümü")
-string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4"] , group="3. Boyama Bölümü")
+string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="3. Boyama Bölümü")
+string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="3. Boyama Bölümü")
 
 myRenkBir3 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="3. Boyama Bölümü") 
 myRenkIki3 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="3. Boyama Bölümü") 
@@ -607,6 +627,8 @@ float ba13 = switch boyaBir3
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma13 = switch boyaBir3
 	"xMA21" => xMA_21Src
@@ -619,6 +641,8 @@ float ma13 = switch boyaBir3
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 	
 ilk3 = plot(acBoyama3 ? ma13 : na, color = color.new(color.white, 100))
 
@@ -633,6 +657,8 @@ float ba23 = switch boyaIki3
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 float ma23 = switch boyaIki3
 	"xMA21" => xMA_21Src
@@ -645,6 +671,8 @@ float ma23 = switch boyaIki3
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
 	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
 
 son3 = plot(acBoyama3 ? ma23 : na, color = color.new(color.white, 100))
 
