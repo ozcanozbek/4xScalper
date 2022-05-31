@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.2.1", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
+indicator(title ="4xScalper - V1.3.1", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -679,5 +679,81 @@ son3 = plot(acBoyama3 ? ma23 : na, color = color.new(color.white, 100))
 //myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya3 = ba13 >= ba23 ? myRenkBir3 : myRenkIki3 
 fill(ilk3, son3 , title = 'Üçüncü Bölge', color = myBoya3, fillgaps = true, transp=75)
+
+
+//BOYAMALAR 4
+
+acBoyama4 = input(defval = false, title = 'Boyama Gözüksün mü?', group="4. Boyama Bölümü")   
+
+string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="4. Boyama Bölümü")
+string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="4. Boyama Bölümü")
+
+myRenkBir4 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="4. Boyama Bölümü") 
+myRenkIki4 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="4. Boyama Bölümü") 
+
+float ba14 = switch boyaBir4
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema 1" => myRsiEmaLine_1S
+	"Rsi/Ema 2" => myRsiEmaLine_2S
+	"Rsi/Ema 3" => myRsiEmaLine_3S
+	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
+
+float ma14 = switch boyaBir4
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema 1" => myRsiEmaLine_1S
+	"Rsi/Ema 2" => myRsiEmaLine_2S
+	"Rsi/Ema 3" => myRsiEmaLine_3S
+	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
+	
+ilk4 = plot(acBoyama4 ? ma14 : na, color = color.new(color.white, 100))
+
+float ba24 = switch boyaIki4
+	"xMA21" => xMA_21
+	"xMA50" => xMA_50
+	"xMA100" => xMA_100
+	"xMA200" => xMA_200
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema 1" => myRsiEmaLine_1S
+	"Rsi/Ema 2" => myRsiEmaLine_2S
+	"Rsi/Ema 3" => myRsiEmaLine_3S
+	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
+
+float ma24 = switch boyaIki4
+	"xMA21" => xMA_21Src
+	"xMA50" => xMA_50Src
+	"xMA100" => xMA_100Src
+	"xMA200" => xMA_200Src
+	"xMum" => close
+	"Kama" => nAMA
+	"Rsi/Ema 1" => myRsiEmaLine_1S
+	"Rsi/Ema 2" => myRsiEmaLine_2S
+	"Rsi/Ema 3" => myRsiEmaLine_3S
+	"Rsi/Ema 4" => myRsiEmaLine_4S
+	"Bolinger Üst" => upper
+	"Bolinger Alt" => lower
+
+son4 = plot(acBoyama4 ? ma24 : na, color = color.new(color.white, 100))
+
+//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
+myBoya4 = ba14 >= ba24 ? myRenkBir4 : myRenkIki4 
+fill(ilk4, son4 , title = 'Dördüncü Bölge', color = myBoya4, fillgaps = true, transp=75)
+
 
 //BURADA BİTTİ
