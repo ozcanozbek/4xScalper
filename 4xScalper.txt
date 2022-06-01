@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.3.1", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
+indicator(title ="4xScalper - V1.3.2", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -443,25 +443,42 @@ xMA_200_Plot = plot(xMA_200Src and acxMaCizgisi and acxMa200Cizgisi ? xMA_200Src
 
 
 //BB
-acBb = input(defval = false, title = 'Bolinger Çizgileri Gözüksün mü?', group="Bolinger Bölümü")   
-bbLength = input.int(20, minval=1, step=1, title='Küçük Bolinger Uzunluğu', group="Bolinger Bölümü")
-bbMult = input.float(1.7, minval=0.001, maxval=50.0, step=0.01, title="Küçük Bolinger Standart Sapma", group="Bolinger Bölümü")
+acBb = input(defval = false, title = 'Bolinger Çizgileri Gözüksün mü?', group="Küçük Bolinger Bölümü")   
+bbLength = input.int(20, minval=1, step=1, title='Küçük Bolinger Uzunluğu', group="Küçük Bolinger Bölümü")
+bbMult = input.float(1.7, minval=0.001, maxval=50.0, step=0.01, title="Küçük Bolinger Standart Sapma", group="Küçük Bolinger Bölümü")
 bbBasis = ta.sma(src, bbLength)
 bbDev = bbMult * ta.stdev(src, bbLength)
 upper = bbBasis + bbDev
 lower = bbBasis - bbDev
 bb_Color = color.new(color.orange, 0)
 
-bolP1 = plot(upper and acBb ? upper : na, "Bolinger Üst", color=bb_Color, offset = 0, linewidth=2)
-bolP2 = plot(lower and acBb ? lower : na, "Bolinger Alt", color=bb_Color, offset = 0, linewidth=2)
-fill(bolP1, bolP2, title='Bolinger Bölgesi', transp=100)
+bolP1 = plot(upper and acBb ? upper : na, "Küçük Bolinger Üst", color=bb_Color, offset = 0, linewidth=2)
+bolP2 = plot(lower and acBb ? lower : na, "Küçük Bolinger Alt", color=bb_Color, offset = 0, linewidth=2)
+fill(bolP1, bolP2, title='Küçük Bolinger Bölgesi', transp=100)
+
+
+//BBB
+acBbB = input(defval = false, title = 'Büyük Bolinger Çizgisi Gözüksün mü?', group="Büyük Bolinger Bölümü")   
+bbLengthB = input.int(200, minval=1, step=1, title='Büyük Bolinger Uzunluğu', group="Büyük Bolinger Bölümü")
+bbMultB = input.float(3.18, minval=0.001, maxval=50.0, step=0.01, title="Büyük Bolinger Standart Sapma", group="Büyük Bolinger Bölümü")
+bbBasisB = ta.sma(src, bbLengthB)
+bbDevB = bbMultB * ta.stdev(src, bbLengthB)
+upperB = bbBasisB + bbDevB
+lowerB = bbBasisB - bbDevB
+
+//plot(bbBasisB and acBbB ? bbBasisB  : na, "Büyük Bolinger Orta Çizgi", color=color.lime, offset=0, linewidth=4)
+p1B = plot(upperB and acBbB ? upperB : na, "Büyük Bolinger Üst", color=color.lime, offset=0, linewidth=2)
+p2B = plot(lowerB and acBbB ? lowerB : na, "Büyük Bolinger Alt", color=color.lime, offset=0, linewidth=2)
+fill(p1B, p2B, title='Büyük Bolinger Bölgesi', color=color.lime, transp=100)
+
+
 
 
 //BOYAMALAR 1
 acBoyama = input(defval = false, title = 'Boyama Gözüksün mü?', group="1. Boyama Bölümü")   
 
-string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="1. Boyama Bölümü")
-string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="1. Boyama Bölümü")
+string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
+string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
 
 myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
 myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
@@ -479,6 +496,8 @@ float ba1 = switch boyaBir
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma1 = switch boyaBir
 	"xMA21" => xMA_21Src
@@ -493,6 +512,8 @@ float ma1 = switch boyaBir
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 	
 ilk = plot(acBoyama ? ma1 : na, color = color.new(color.white, 100))
 
@@ -509,6 +530,8 @@ float ba2 = switch boyaIki
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma2 = switch boyaIki
 	"xMA21" => xMA_21Src
@@ -523,6 +546,8 @@ float ma2 = switch boyaIki
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 son = plot(acBoyama ? ma2 : na, color = color.new(color.white, 100))
 
@@ -535,8 +560,8 @@ fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, trans
 
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
 
-string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="2. Boyama Bölümü")
-string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="2. Boyama Bölümü")
+string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
+string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 
 myRenkBir2 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
 myRenkIki2 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
@@ -554,6 +579,8 @@ float ba12 = switch boyaBir2
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma12 = switch boyaBir2
 	"xMA21" => xMA_21Src
@@ -568,6 +595,8 @@ float ma12 = switch boyaBir2
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 	
 ilk2 = plot(acBoyama2 ? ma12 : na, color = color.new(color.white, 100))
 
@@ -584,6 +613,8 @@ float ba22 = switch boyaIki2
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma22 = switch boyaIki2
 	"xMA21" => xMA_21Src
@@ -598,6 +629,8 @@ float ma22 = switch boyaIki2
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 son2 = plot(acBoyama2 ? ma22 : na, color = color.new(color.white, 100))
 
@@ -610,8 +643,8 @@ fill(ilk2, son2 , title = 'İkinci Bölge', color = myBoya2, fillgaps = true, tr
 
 acBoyama3 = input(defval = false, title = 'Boyama Gözüksün mü?', group="3. Boyama Bölümü")   
 
-string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="3. Boyama Bölümü")
-string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="3. Boyama Bölümü")
+string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
+string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
 
 myRenkBir3 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="3. Boyama Bölümü") 
 myRenkIki3 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="3. Boyama Bölümü") 
@@ -629,6 +662,8 @@ float ba13 = switch boyaBir3
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma13 = switch boyaBir3
 	"xMA21" => xMA_21Src
@@ -643,6 +678,8 @@ float ma13 = switch boyaBir3
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 	
 ilk3 = plot(acBoyama3 ? ma13 : na, color = color.new(color.white, 100))
 
@@ -659,6 +696,8 @@ float ba23 = switch boyaIki3
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma23 = switch boyaIki3
 	"xMA21" => xMA_21Src
@@ -673,6 +712,8 @@ float ma23 = switch boyaIki3
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 son3 = plot(acBoyama3 ? ma23 : na, color = color.new(color.white, 100))
 
@@ -685,8 +726,8 @@ fill(ilk3, son3 , title = 'Üçüncü Bölge', color = myBoya3, fillgaps = true,
 
 acBoyama4 = input(defval = false, title = 'Boyama Gözüksün mü?', group="4. Boyama Bölümü")   
 
-string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="4. Boyama Bölümü")
-string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt"] , group="4. Boyama Bölümü")
+string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
+string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
 
 myRenkBir4 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="4. Boyama Bölümü") 
 myRenkIki4 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="4. Boyama Bölümü") 
@@ -704,6 +745,8 @@ float ba14 = switch boyaBir4
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma14 = switch boyaBir4
 	"xMA21" => xMA_21Src
@@ -718,6 +761,8 @@ float ma14 = switch boyaBir4
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 	
 ilk4 = plot(acBoyama4 ? ma14 : na, color = color.new(color.white, 100))
 
@@ -734,6 +779,8 @@ float ba24 = switch boyaIki4
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 float ma24 = switch boyaIki4
 	"xMA21" => xMA_21Src
@@ -748,12 +795,13 @@ float ma24 = switch boyaIki4
 	"Rsi/Ema 4" => myRsiEmaLine_4S
 	"Bolinger Üst" => upper
 	"Bolinger Alt" => lower
+	"Büyük Bolinger Üst" => upperB
+	"Büyük Bolinger Alt" => lowerB
 
 son4 = plot(acBoyama4 ? ma24 : na, color = color.new(color.white, 100))
 
 //myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya4 = ba14 >= ba24 ? myRenkBir4 : myRenkIki4 
 fill(ilk4, son4 , title = 'Dördüncü Bölge', color = myBoya4, fillgaps = true, transp=75)
-
 
 //BURADA BİTTİ
