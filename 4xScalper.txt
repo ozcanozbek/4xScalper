@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.3.2", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
+indicator(title ="4xScalper - V1.3.3", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -476,6 +476,7 @@ fill(p1B, p2B, title='Büyük Bolinger Bölgesi', color=color.lime, transp=100)
 
 //BOYAMALAR 1
 acBoyama = input(defval = false, title = 'Boyama Gözüksün mü?', group="1. Boyama Bölümü")   
+acBoyamaSutun1 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="1. Boyama Bölümü")   
 
 string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
 string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
@@ -551,14 +552,15 @@ float ma2 = switch boyaIki
 
 son = plot(acBoyama ? ma2 : na, color = color.new(color.white, 100))
 
-//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya = ba1 >= ba2 ? myRenkBir : myRenkIki 
 fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, transp=75)
+bgcolor(acBoyamaSutun1 and ma1 ? myBoya : acBoyamaSutun1 and ma2 ?  myBoya : na)
 
 
 //BOYAMALAR 2
 
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
+acBoyamaSutun2 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="2. Boyama Bölümü")   
 
 string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
@@ -634,14 +636,15 @@ float ma22 = switch boyaIki2
 
 son2 = plot(acBoyama2 ? ma22 : na, color = color.new(color.white, 100))
 
-//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya2 = ba12 >= ba22 ? myRenkBir2 : myRenkIki2 
 fill(ilk2, son2 , title = 'İkinci Bölge', color = myBoya2, fillgaps = true, transp=75)
+bgcolor(acBoyamaSutun2 and ma12 ? myBoya2 : acBoyamaSutun2 and ma22 ?  myBoya2 : na)
 
 
 //BOYAMALAR 3
 
 acBoyama3 = input(defval = false, title = 'Boyama Gözüksün mü?', group="3. Boyama Bölümü")   
+acBoyamaSutun3 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="3. Boyama Bölümü")   
 
 string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
 string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
@@ -717,14 +720,15 @@ float ma23 = switch boyaIki3
 
 son3 = plot(acBoyama3 ? ma23 : na, color = color.new(color.white, 100))
 
-//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya3 = ba13 >= ba23 ? myRenkBir3 : myRenkIki3 
 fill(ilk3, son3 , title = 'Üçüncü Bölge', color = myBoya3, fillgaps = true, transp=75)
+bgcolor(acBoyamaSutun3 and ma13 ? myBoya3 : acBoyamaSutun3 and ma23 ?  myBoya3 : na)
 
 
 //BOYAMALAR 4
 
 acBoyama4 = input(defval = false, title = 'Boyama Gözüksün mü?', group="4. Boyama Bölümü")   
+acBoyamaSutun4 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="4. Boyama Bölümü")   
 
 string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
 string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
@@ -800,92 +804,8 @@ float ma24 = switch boyaIki4
 
 son4 = plot(acBoyama4 ? ma24 : na, color = color.new(color.white, 100))
 
-//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
 myBoya4 = ba14 >= ba24 ? myRenkBir4 : myRenkIki4 
 fill(ilk4, son4 , title = 'Dördüncü Bölge', color = myBoya4, fillgaps = true, transp=75)
-
-
-//BOYAMALAR 5
-
-acBoyama5 = input(defval = false, title = 'Boyama Gözüksün mü?', group="5. Boyama Bölümü")   
-
-string boyaBir5 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="5. Boyama Bölümü")
-string boyaIki5 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="5. Boyama Bölümü")
-
-myRenkBir5 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="5. Boyama Bölümü") 
-myRenkIki5 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="5. Boyama Bölümü") 
-
-float ba15 = switch boyaBir5
-	"xMA21" => xMA_21
-	"xMA50" => xMA_50
-	"xMA100" => xMA_100
-	"xMA200" => xMA_200
-	"xMum" => close
-	"Kama" => nAMA
-	"Rsi/Ema 1" => myRsiEmaLine_1S
-	"Rsi/Ema 2" => myRsiEmaLine_2S
-	"Rsi/Ema 3" => myRsiEmaLine_3S
-	"Rsi/Ema 4" => myRsiEmaLine_4S
-	"Bolinger Üst" => upper
-	"Bolinger Alt" => lower
-	"Büyük Bolinger Üst" => upperB
-	"Büyük Bolinger Alt" => lowerB
-
-float ma15 = switch boyaBir5
-	"xMA21" => xMA_21Src
-	"xMA50" => xMA_50Src
-	"xMA100" => xMA_100Src
-	"xMA200" => xMA_200Src
-	"xMum" => close
-	"Kama" => nAMA
-	"Rsi/Ema 1" => myRsiEmaLine_1S
-	"Rsi/Ema 2" => myRsiEmaLine_2S
-	"Rsi/Ema 3" => myRsiEmaLine_3S
-	"Rsi/Ema 4" => myRsiEmaLine_4S
-	"Bolinger Üst" => upper
-	"Bolinger Alt" => lower
-	"Büyük Bolinger Üst" => upperB
-	"Büyük Bolinger Alt" => lowerB
-	
-ilk5 = plot(acBoyama4 ? ma15 : na, color = color.new(color.white, 100))
-
-float ba25 = switch boyaIki5
-	"xMA21" => xMA_21
-	"xMA50" => xMA_50
-	"xMA100" => xMA_100
-	"xMA200" => xMA_200
-	"xMum" => close
-	"Kama" => nAMA
-	"Rsi/Ema 1" => myRsiEmaLine_1S
-	"Rsi/Ema 2" => myRsiEmaLine_2S
-	"Rsi/Ema 3" => myRsiEmaLine_3S
-	"Rsi/Ema 4" => myRsiEmaLine_4S
-	"Bolinger Üst" => upper
-	"Bolinger Alt" => lower
-	"Büyük Bolinger Üst" => upperB
-	"Büyük Bolinger Alt" => lowerB
-
-float ma25 = switch boyaIki5
-	"xMA21" => xMA_21Src
-	"xMA50" => xMA_50Src
-	"xMA100" => xMA_100Src
-	"xMA200" => xMA_200Src
-	"xMum" => close
-	"Kama" => nAMA
-	"Rsi/Ema 1" => myRsiEmaLine_1S
-	"Rsi/Ema 2" => myRsiEmaLine_2S
-	"Rsi/Ema 3" => myRsiEmaLine_3S
-	"Rsi/Ema 4" => myRsiEmaLine_4S
-	"Bolinger Üst" => upper
-	"Bolinger Alt" => lower
-	"Büyük Bolinger Üst" => upperB
-	"Büyük Bolinger Alt" => lowerB
-
-son5 = plot(acBoyama5 ? ma25 : na, color = color.new(color.white, 100))
-
-//myBoya = acBoyama ? ba1 >= ba2 ? myRenkBir : myRenkIki : color.new(color.white, 100)
-myBoya5 = ba15 >= ba25 ? myRenkBir5 : myRenkIki5 
-fill(ilk5, son5 , title = 'Beşinci Bölge', color = myBoya5, fillgaps = true, transp=75)
-
+bgcolor(acBoyamaSutun4 and ma14 ? myBoya4 : acBoyamaSutun4 and ma24 ?  myBoya4 : na)
 
 //BURADA BİTTİ
