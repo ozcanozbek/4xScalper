@@ -495,9 +495,9 @@ acBoyamaAkes1 = input(defval = false, title = 'Birinci İkinciyi Aşağı Kesme 
 BoyamaYkes1 = ta.crossover(ma1, ma2)
 BoyamaAkes1 = ta.crossunder(ma1, ma2)
 
-plotshape(BoyamaYkes1 and acBoyamaYkes1 ? BoyamaYkes1 : na, title ='Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir1, offset=0, size=size.normal)
+plotshape(BoyamaYkes1 and acBoyamaYkes1 ? BoyamaYkes1 : na, title ='1.Bölge Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir1, offset=0, size=size.normal)
 alertcondition(BoyamaYkes1, title="1. Bölge Yukarı Kesme", message='1.Bölge Yukarı {{ticker}}, FİYAT={{close}}')
-plotshape(BoyamaAkes1 and acBoyamaAkes1 ? BoyamaAkes1 : na, title ='Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki1, offset=0, size=size.normal)
+plotshape(BoyamaAkes1 and acBoyamaAkes1 ? BoyamaAkes1 : na, title ='1.Bölge Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki1, offset=0, size=size.normal)
 alertcondition(BoyamaAkes1, title="1. Bölge Aşağı Kesme", message='1.Bölge Aşağı {{ticker}}, FİYAT={{close}}')
 
 
@@ -578,9 +578,9 @@ acBoyamaAkes2 = input(defval = false, title = 'Birinci İkinciyi Aşağı Kesme 
 BoyamaYkes2 = ta.crossover(ma12, ma22)
 BoyamaAkes2 = ta.crossunder(ma12, ma22)
 
-plotshape(BoyamaYkes2 and acBoyamaYkes2 ? BoyamaYkes2 : na, title ='Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir2, offset=0, size=size.normal)
+plotshape(BoyamaYkes2 and acBoyamaYkes2 ? BoyamaYkes2 : na, title ='2.Bölge Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir2, offset=0, size=size.normal)
 alertcondition(BoyamaYkes2, title="2. Bölge Yukarı Kesme", message='2.Bölge Yukarı {{ticker}}, FİYAT={{close}}')
-plotshape(BoyamaAkes2 and acBoyamaAkes2 ? BoyamaAkes2 : na, title ='Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki2, offset=0, size=size.normal)
+plotshape(BoyamaAkes2 and acBoyamaAkes2 ? BoyamaAkes2 : na, title ='2.Bölge Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki2, offset=0, size=size.normal)
 alertcondition(BoyamaAkes2, title="2. Bölge Aşağı Kesme", message='2.Bölge Aşağı {{ticker}}, FİYAT={{close}}')
 
 
@@ -661,9 +661,9 @@ acBoyamaAkes3 = input(defval = false, title = 'Birinci İkinciyi Aşağı Kesme 
 BoyamaYkes3 = ta.crossover(ma13, ma23)
 BoyamaAkes3 = ta.crossunder(ma13, ma23)
 
-plotshape(BoyamaYkes3 and acBoyamaYkes3 ? BoyamaYkes3 : na, title ='Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir3, offset=0, size=size.normal)
+plotshape(BoyamaYkes3 and acBoyamaYkes3 ? BoyamaYkes3 : na, title ='3.Bölge Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir3, offset=0, size=size.normal)
 alertcondition(BoyamaYkes3, title="3. Bölge Yukarı Kesme", message='3.Bölge Yukarı {{ticker}}, FİYAT={{close}}')
-plotshape(BoyamaAkes3 and acBoyamaAkes3 ? BoyamaAkes3 : na, title ='Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki3, offset=0, size=size.normal)
+plotshape(BoyamaAkes3 and acBoyamaAkes3 ? BoyamaAkes3 : na, title ='3.Bölge Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki3, offset=0, size=size.normal)
 alertcondition(BoyamaAkes3, title="3. Bölge Aşağı Kesme", message='3.Bölge Aşağı {{ticker}}, FİYAT={{close}}')
 
 
@@ -743,10 +743,64 @@ acBoyamaAkes4 = input(defval = false, title = 'Birinci İkinciyi Aşağı Kesme 
 BoyamaYkes4 = ta.crossover(ma14, ma24)
 BoyamaAkes4 = ta.crossunder(ma14, ma24)
 
-plotshape(BoyamaYkes4 and acBoyamaYkes4 ? BoyamaYkes4 : na, title ='Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir4, offset=0, size=size.normal)
+plotshape(BoyamaYkes4 and acBoyamaYkes4 ? BoyamaYkes4 : na, title ='4.Bölge Birinci İkinciyi Yukarı Kesme İşareti', text='', style=shape.triangleup, location=location.abovebar, color=myRenkBir4, offset=0, size=size.normal)
 alertcondition(BoyamaYkes4, title="4. Bölge Yukarı Kesme", message='4.Bölge Yukarı {{ticker}}, FİYAT={{close}}')
-plotshape(BoyamaAkes4 and acBoyamaAkes4 ? BoyamaAkes4 : na, title ='Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki4, offset=0, size=size.normal)
+plotshape(BoyamaAkes4 and acBoyamaAkes4 ? BoyamaAkes4 : na, title ='4.Bölge Birinci İkinciyi Aşağı Kesme İşareti', text='', style=shape.triangledown, location=location.belowbar, color=myRenkIki4, offset=0, size=size.normal)
 alertcondition(BoyamaAkes4, title="4. Bölge Aşağı Kesme", message='4.Bölge Aşağı {{ticker}}, FİYAT={{close}}')
+
+/// Renk Değişimi İşaretleri
+
+
+xMaAStyleRenk = shape.diamond
+xMaASizeRenk = size.tiny
+xMaAColorRenk = color.red
+xMaALocationRenk = location.abovebar
+
+xMaYStyleRenk = shape.diamond
+xMaYSizeRenk = size.small
+xMaYColorRenk = color.lime
+xMaYLocationRenk = location.belowbar
+
+
+
+//acxMaARenkler = input(defval = true, title = 'xMA Aşağı Renk Değişimi İşaretleri Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+//acxMaYRenkler = input(defval = true, title = 'xMA Yukarı Renk Değişimi İşaretleri Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+
+//acxMa21ARenkler = input(defval = true, title = 'xMA21 Aşağı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+acxMa21YRenkler = input(defval = true, title = 'xMA21 Yukarı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+//acxMa50ARenkler = input(defval = false, title = 'xMA50 Aşağı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+acxMa50YRenkler = input(defval = false, title = 'xMA50 Yukarı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+//acxMa100ARenkler = input(defval = false, title = 'xMA100 Aşağı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+//acxMa100YRenkler = input(defval = false, title = 'xMA100 Yukarı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+//acxMa200ARenkler = input(defval = false, title = 'xMA200 Aşağı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+acxMa200YRenkler = input(defval = false, title = 'xMA200 Yukarı Renk Değişimi İşareti Gözüksün mü?', group="xMA Renk Değişimi İşaretleri")   
+
+
+xMA_21_RenkDegisimiA = xMA_21_Color_S != xMA_21_Color_S[1] and xMA_21Src < xMA_21Src[1]
+xMA_21_RenkDegisimiY = xMA_21_Color_S != xMA_21_Color_S[1] and xMA_21Src >= xMA_21Src[1]
+//plotshape(xMA_21_RenkDegisimiA and acxMa21ARenkler ? xMA_21_RenkDegisimiA : na , title = 'xMa21 Aşağı Renk Değişimi', text='', style=xMaAStyleRenk , location=xMaALocationRenk, color=xMA_21_Color, offset=0, size=xMaASizeRenk)
+plotshape(xMA_21_RenkDegisimiY and acxMa21YRenkler ? xMA_21_RenkDegisimiY : na , title = 'xMa21 Yukarı Renk Değişimi', text='', style=xMaYStyleRenk , location=xMaYLocationRenk, color=xMA_21_Color, offset=0, size=xMaYSizeRenk)
+alertcondition(xMA_21_RenkDegisimiY, title="xMa21 Yukarı Renk Değişimi", message='xMa21 Yukarı Renk Değişimi {{ticker}}, FİYAT={{close}}')
+
+
+xMA_50_RenkDegisimiA = xMA_50_Color_S != xMA_50_Color_S[1] and xMA_50Src < xMA_50Src[1]
+xMA_50_RenkDegisimiY = xMA_50_Color_S != xMA_50_Color_S[1] and xMA_50Src >= xMA_50Src[1]
+//plotshape(xMA_50_RenkDegisimiA and acxMa50ARenkler ? xMA_50_RenkDegisimiA : na , title = 'xMa50 Aşağı Renk Değişimi', text='', style=xMaAStyleRenk , location=xMaALocationRenk, color=xMA_50_Color, offset=0, size=xMaASizeRenk)
+plotshape(xMA_50_RenkDegisimiY and acxMa50YRenkler ? xMA_50_RenkDegisimiY : na , title = 'xMa50 Yukarı Renk Değişimi', text='', style=xMaYStyleRenk , location=xMaYLocationRenk, color=xMA_50_Color, offset=0, size=xMaYSizeRenk)
+alertcondition(xMA_50_RenkDegisimiY, title="xMa50 Yukarı Renk Değişimi", message='xMa50 Yukarı Renk Değişimi {{ticker}}, FİYAT={{close}}')
+
+//xMA_100_RenkDegisimiA = xMA_100_Color_S != xMA_100_Color_S[1] and xMA_100Src < xMA_100Src[1]
+//xMA_100_RenkDegisimiY = xMA_100_Color_S != xMA_100_Color_S[1] and xMA_100Src >= xMA_100Src[1]
+//plotshape(xMA_100_RenkDegisimiA and acxMa100ARenkler ? xMA_100_RenkDegisimiA : na , title = 'xMa100 Aşağı Renk Değişimi', text='', style=xMaAStyleRenk , location=xMaALocationRenk, color=xMA_100_Color, offset=0, size=xMaASizeRenk)
+//plotshape(xMA_100_RenkDegisimiY and acxMa100YRenkler ? xMA_100_RenkDegisimiY : na , title = 'xMa100 Yukarı Renk Değişimi', text='', style=xMaYStyleRenk , location=xMaYLocationRenk, color=xMA_100_Color, offset=0, size=xMaYSizeRenk)
+//alertcondition(xMA_100_RenkDegisimiY, title="xMa100 Yukarı Renk Değişimi", message='xMa100 Yukarı Renk Değişimi {{ticker}}, FİYAT={{close}}')
+
+xMA_200_RenkDegisimiA = xMA_200_Color_S != xMA_200_Color_S[1] and xMA_200Src < xMA_200Src[1]
+xMA_200_RenkDegisimiY = xMA_200_Color_S != xMA_200_Color_S[1] and xMA_200Src >= xMA_200Src[1]
+//plotshape(xMA_200_RenkDegisimiA and acxMa200ARenkler ? xMA_200_RenkDegisimiA : na , title = 'xMa200 Aşağı Renk Değişimi', text='', style=xMaAStyleRenk , location=xMaALocationRenk, color=xMA_200_Color, offset=0, size=xMaASizeRenk)
+plotshape(xMA_200_RenkDegisimiY and acxMa200YRenkler ? xMA_200_RenkDegisimiY : na , title = 'xMa200 Yukarı Renk Değişimi', text='', style=xMaYStyleRenk , location=xMaYLocationRenk, color=xMA_200_Color, offset=0, size=xMaYSizeRenk)
+alertcondition(xMA_200_RenkDegisimiY, title="xMa200 Yukarı Renk Değişimi", message='xMa200 Yukarı Renk Değişimi {{ticker}}, FİYAT={{close}}')
+
 
 
 //BURADA BİTTİ
