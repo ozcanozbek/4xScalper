@@ -1,0 +1,143 @@
+//@version=5
+indicator(title="E34_YANDI_TEK_MTF")
+
+demaHesapla(mySrc,len)=>
+    ema1 = ta.ema(close, len)
+    ema2 = ta.ema(ema1, len)
+    (2 * ema1) - ema2  
+
+temaHesapla(mySrc,len)=>
+    ema1 = ta.ema(close, len)
+    ema2 = ta.ema(ema1, len)
+    ema3 = ta.ema(ema2, len)
+    3 * (ema1 - ema2) + ema3  
+
+xMaKontrol(xMaTip, mySrc, len)=>
+    float xMA = switch xMaTip
+        "EMA" => ta.ema(close, len) 
+        "SMA" => ta.sma(close, len) 
+        "HMA" => ta.hma(close, len) 
+        "RMA" => ta.rma(close, len) 
+        "WMA" => ta.wma(close, len) 
+        "VWMA" => ta.vwma(close, len)
+        "(D)EMA" => demaHesapla(close,len)
+        "(T)EMA" => temaHesapla(close,len)
+        => 0.0 
+
+xMaMumKontrol(xMaMumTip)=>
+    string xMA = switch xMaMumTip
+        "1 Dakika" => "1"
+        "5 Dakika" => "5"
+        "15 Dakika" => "15"
+        "30 Dakika" => "30"
+        "1 Saat" => "60" 
+        "2 Saat" => "120" 
+        "4 Saat" => "240" 
+        "1 Gün" => "D"
+        "1 Hafta" => "W"
+        "3 Hafta" => "3W"
+        "1 Ay" => "M"
+        "5 Hafta" => "5W"
+        => str.tostring(timeframe.period)
+
+
+//EFI
+var cumVol = 0.
+cumVol += nz(volume)
+if barstate.islast and cumVol == 0
+    runtime.error("Hacim Verisine Erişilemiyor!")
+length = input.int(5, minval=1, title = "EFI Uzunluğu", group="EFI Ayarları")
+acEFI = input(defval = true, title = 'EFI, Trend Hesaplamasını Etkilesin mi?', group="EFI Ayarlar")  
+efi = ta.ema(ta.change(close) * volume, length)
+plot(efi, color=color.orange, title="Elders Force Index",linewidth=1, style = plot.style_area)
+hline(0, color=color.lime, title="Sıfır Çizgisi",linewidth=1,linestyle=hline.style_solid)
+
+
+
+//TREND
+string xMAMum21 = input.timeframe(defval = "Grafik", title = "Trend Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Trend Değerleri")
+string xMaTip21 = input.string(defval="EMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "Trend Tipi", group="Trend Değerleri")
+length2a = input(34, 'Trend Uzunluk', group="Trend Değerleri")
+
+xMaMum21Src = xMaMumKontrol(xMAMum21)
+xMA_21 = xMaKontrol(xMaTip21, close, length2a) 
+xMA_21Src = request.security(syminfo.tickerid,xMaMum21Src, xMA_21)
+
+sure = str.tostring(xMaMum21Src)
+mySure = str.length(sure)>0 ? sure : str.tostring(timeframe.period)
+
+
+//Baraj
+acSma200 = input(defval = false, title = 'Baraj, Trend Hesaplamasını Etkilesin mi?', group="Baraj Ayarları")  
+string xMAMum200 = input.timeframe(defval = "Grafik", title = "Trend Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Baraj Ayarları")
+string xMaTip200 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "Baraj Tipi", group="Baraj Ayarları")
+length4a = input(200, 'Baraj Uzunluk', group="Baraj Ayarları")
+xMaMum200Src = xMaMumKontrol(xMAMum200)
+xMA_200 = xMaKontrol(xMaTip200, close, length4a) 
+xMA_200Src = request.security(syminfo.tickerid,xMaMum200Src, xMA_200)
+
+//PANO
+acPano = input(defval = true, title = 'Pano, Gösterilsin mi?', group="Pano Ayarları")  
+acPanoDetay = input(defval = true, title = 'Pano Detayı, Gösterilsin mi?', group="Pano Ayarları")  
+
+
+
+//Koşul
+sart = (acEFI ? efi>0 : true) and close > xMaKontrol(xMaTip21, close, length2a) and xMaKontrol(xMaTip21, close, length2a) > xMaKontrol(xMaTip21, close, length2a)[1] and (acSma200 ? close > xMaKontrol(xMaTip200, close, length4a) : true)  
+
+//Formül
+customFunc() => [sart, str.tostring(math.round(close[1],2),"#.00"), str.tostring(math.round(close,2),"#.00"), str.tostring(math.round(((close-close[1])/close[1])*100,2)), ((close-close[1])/close[1])>0, (sart[1]==false and sart==true), (sart[1]==true and sart==false) ]
+
+
+[s1,e1,a1,o1,y1,z1,k1] = request.security(syminfo.tickerid, sure, customFunc())
+
+plotshape(s1, title ='AL Fırsatı Sürekli İşareti', text='', style=shape.triangleup, location=location.top, color=color.lime, offset=0, size=size.tiny)
+
+plotshape(z1, title ='AL Fırsatı İşareti', text='', style=shape.triangleup, location=location.bottom, color=color.lime, offset=0, size=size.small)
+alertcondition(z1, title = "E34_YANDI_TEK_MTF", message = "AF YANDI {{ticker}}, FİYAT={{close}}")
+
+plotshape(k1, title ='SAT Fırsatı İşareti', text='', style=shape.triangledown, location=location.bottom, color=color.red, offset=0, size=size.tiny)
+alertcondition(k1, title = "E34_SONDU_TEK_MTF", message = "SF SONDU {{ticker}}, FİYAT={{close}}")
+
+
+scr_label = str.tostring(syminfo.ticker) + "\n"
+scr_label := scr_label + '*Peryod:' + str.tostring(mySure) + "; Önce:" + e1 + "; Sonra:" + a1 + " %" + o1 + (y1 ? ' +%' : ' -%') + (s1 ? ' xMA üstü' : ' xMA altı') + (z1 ? ' Alarm Var' : '')  
+scr_labelD =""
+
+[s01,e01,a01,o01,y01,z01] = request.security(syminfo.tickerid, "1", customFunc()) 
+scr_labelD :=  scr_labelD + 'Peryod: 1 Dakika' + "; Önce:" + e01 + "; Sonra:" + a01 + " %" + o01 + (y01 ? ' +%' : ' -%') + (s01 ? ' xMA üstü' : ' xMA altı') + (z01 ? ' Alarm Var' : '') + "\n" 
+
+[s02,e02,a02,o02,y02,z02] = request.security(syminfo.tickerid, "5", customFunc())
+scr_labelD := scr_labelD + 'Peryod: 5 Dakika' + "; Önce:" + e02 + "; Sonra:" + a02 + " %" + o02 + (y02 ? ' +%' : ' -%') + (s02 ? ' xMA üstü' : ' xMA altı') + (z02 ? ' Alarm Var' : '') + "\n"
+
+[s03,e03,a03,o03,y03,z03] = request.security(syminfo.tickerid, "15", customFunc())
+scr_labelD := scr_labelD + 'Peryod:15 Dakika' + "; Önce:" + e03 + "; Sonra:" + a03 + " %" + o03 + (y03 ? ' +%' : ' -%') + (s03 ? ' xMA üstü' : ' xMA altı') + (z03 ? ' Alarm Var' : '') + "\n"
+
+[s04,e04,a04,o04,y04,z04] = request.security(syminfo.tickerid, "120", customFunc())
+scr_labelD := scr_labelD + 'Peryod: 2 Saat   ' + "; Önce:" + e04 + "; Sonra:" + a04 + " %" + o04 + (y04 ? ' +%' : ' -%') + (s04 ? ' xMA üstü' : ' xMA altı') + (z04 ? ' Alarm Var' : '') + "\n"
+
+[s05,e05,a05,o05,y05,z05] = request.security(syminfo.tickerid, "240", customFunc())
+scr_labelD := scr_labelD + 'Peryod: 4 Saat   ' + "; Önce:" + e05 + "; Sonra:" + a05 + " %" + o05 + (y05 ? ' +%' : ' -%') + (s05 ? ' xMA üstü' : ' xMA altı') + (z05 ? ' Alarm Var' : '') + "\n"
+
+[s06,e06,a06,o06,y06,z06] = request.security(syminfo.tickerid, "D", customFunc())
+scr_labelD := scr_labelD + 'Peryod: 1 Gün    ' + "; Önce:" + e06 + "; Sonra:" + a06 + " %" + o06 + (y06 ? ' +%' : ' -%') + (s06 ? ' xMA üstü' : ' xMA altı') + (z06 ? ' Alarm Var' : '') + "\n"
+
+[s07,e07,a07,o07,y07,z07] = request.security(syminfo.tickerid, "W", customFunc())
+scr_labelD := scr_labelD + 'Peryod: 1 Hafta  ' + "; Önce:" + e07 + "; Sonra:" + a07 + " %" + o07 + (y07 ? ' +%' : ' -%') + (s07 ? ' xMA üstü' : ' xMA altı') + (z07 ? ' Alarm Var' : '') 
+
+
+scr_label := scr_label + (acPanoDetay ? ("\n\n" + scr_labelD) : na)
+
+
+if acPano
+    lab_1 = label.new(
+              bar_index[70],0, scr_label,
+              color=color.new(color.green,50),
+              textcolor=color.white,
+              textalign=text.align_left,
+              style = label.style_label_center,
+              yloc = yloc.belowbar
+               )
+    label.delete(lab_1[1])
+
+//BURADA BİTTİ
