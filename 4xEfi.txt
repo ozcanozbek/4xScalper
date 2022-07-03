@@ -16,7 +16,7 @@ efi = ta.ema(ta.change(close) * volume, length)
 //myColorY = efi>=0 and efi>efi[1] ? color.lime : color.white
 //myColorD = efi<0 and efi<=efi[1] ? color.red : color.yellow
 
-myColorY = efi>=0 and efi>efi[1] ? color.lime : color.lime
+myColorY = efi>=0 and efi>efi[1] ? color.white : color.white
 myColorD = efi<0 and efi<=efi[1] ? color.red : color.red
 
 myColor =  efi>=0 ? myColorY : myColorD
@@ -46,7 +46,7 @@ boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
 myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
 //fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
 bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
-plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=3)
+plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
 
 
-hline(15, color=color.white, title="Sıfır Çizgisi",linewidth=1,linestyle=hline.style_solid)
+hline(15, color=color.white, title="Sıfır Çizgisi",linewidth=2,linestyle=hline.style_solid)
