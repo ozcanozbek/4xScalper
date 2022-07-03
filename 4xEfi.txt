@@ -18,7 +18,6 @@ myColorD = efi<0 and efi<=efi[1] ? color.red : color.yellow
 
 myColor =  efi>=0 ? myColorY : myColorD
 
-plot(close and acCizgiEFI? close : na, color=myColor, title="Elders Force Index",linewidth=3)
 
 
 //DMI 
@@ -44,3 +43,4 @@ boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
 myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
 //fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
 bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
+plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=3)
