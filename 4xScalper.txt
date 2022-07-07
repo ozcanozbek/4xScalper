@@ -70,7 +70,7 @@ acxMa200Cizgisi = input(defval = true, title = 'xMA200 Çizgisi Gözüksün mü?
 
 
 //kama
-acKama = input(true, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
+acKama = input(false, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
 
 
 Length = input.int(21, minval=1, group="Kama Ayarları")
@@ -88,6 +88,59 @@ nAMA := nz(nAMA[1]) + nsmooth * (xPrice - nz(nAMA[1]))
 plot(acKama and nAMA ? nAMA : na , color=kama_col, title='KAMA',linewidth=3)
 
 
+//Altın Çizgisi
+
+srcAltin = input(defval=hlcc4, title='Source', group="Altın Çizgi Ayarları")
+per = input.int(defval=230, minval=1, title='Örnekleme periyodu', group="Altın Çizgi Ayarları")
+mult = input.float(defval=2.0, minval=0.1, title='Aralık carpanı', group="Altın Çizgi Ayarları")
+acAltinCizgi = input(defval = false, title = 'Altın Cizgisi Gözüksün mü?', group="Altın Çizgi Ayarları") 
+
+smoothrng(x, t, m) =>
+    wper = t * 2 - 1
+    avrng = ta.ema(math.abs(x - x[1]), t)
+    smoothrng = ta.ema(avrng, wper) * m
+    smoothrng
+smrng = smoothrng(srcAltin, per, mult)
+
+rngfilt(x, r) =>
+    rngfilt = x
+    rngfilt := x > nz(rngfilt[1]) ? x - r < nz(rngfilt[1]) ? nz(rngfilt[1]) : x - r : x + r > nz(rngfilt[1]) ? nz(rngfilt[1]) : x + r
+    rngfilt
+filt = rngfilt(srcAltin, smrng)
+
+// Filter Direction
+upward = 0.0
+upward := filt > filt[1] ? nz(upward[1]) + 1 : filt < filt[1] ? 0 : nz(upward[1])
+downward = 0.0
+downward := filt < filt[1] ? nz(downward[1]) + 1 : filt > filt[1] ? 0 : nz(downward[1])
+
+
+// Colors
+filtcolor = upward > 0 ? color.lime : downward > 0 ? color.red : color.orange
+filtplot = plot(filt and acAltinCizgi ? filt : na, color=filtcolor, linewidth=3, title='Altın Cizgisi')
+
+
+
+//Mavilim
+mavilimnew = input(false, title='Mavilim Yeni Çizgisi Gösterilsin mi?', group="Mavilim Ayarları")
+fmal = input(3, 'First Moving Average length', group="Mavilim Ayarları")
+smal = input(1, 'Second Moving Average length', group="Mavilim Ayarları")
+tmal = fmal + smal
+Fmal = smal + tmal
+Ftmal = tmal + Fmal
+Smal = Fmal + Ftmal
+
+M1 = ta.wma(close, fmal)
+M2 = ta.wma(M1, smal)
+M3 = ta.wma(M2, tmal)
+M4 = ta.wma(M3, Fmal)
+M5 = ta.wma(M4, Ftmal)
+MAVW = ta.wma(M5, Smal)
+col1 = MAVW > MAVW[1]
+col3 = MAVW < MAVW[1]
+colorM = col1 ? color.lime : col3 ? color.red : color.yellow
+
+plot(mavilimnew and MAVW ? MAVW : na, color=colorM, linewidth=3, title='MAVW')
 
 
 // Fibo Ayarları
@@ -128,9 +181,9 @@ line2000_2 = srcHigh - diff * 2.000
 line2272_2 = srcHigh - diff * 2.272
 
 
-plot(line2272 and acFiboLines and acFlUst ? line2272 : na, title='2.272', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line2000 and acFiboLines and acFlUst ? line2000 : na, title='2.000', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line1618 and acFiboLines and acFlUst ? line1618 : na, title='1.618', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line2272 and acFiboLines and acFlUst ? line2272 : na, title='2.272', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line2000 and acFiboLines and acFlUst ? line2000 : na, title='2.000', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line1618 and acFiboLines and acFlUst ? line1618 : na, title='1.618', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1414 and acFiboLines and acFlUst ? line1414 : na, title='1.414', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1272 and acFiboLines and acFlUst ? line1272 : na, title='1.272', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1000 and acFiboLines and acFlOrta ? line1000 : na, title='1.000', color=color.new(#2E9AFE, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=2)
@@ -144,7 +197,7 @@ plot(line1272_2 and acFiboLines and acFlAlt ? line1272_2 : na, title='-0.272', c
 plot(line1414_2 and acFiboLines and acFlAlt ? line1414_2 : na, title='-0.414', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1618_2 and acFiboLines and acFlAlt ? line1618_2 : na, title='-0.618', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line2000_2 and acFiboLines and acFlAlt ? line2000_2 : na, title='-1.000', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line2272_2 and acFiboLines and acFlAlt ? line2272_2 : na, title='-1.272', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line2272_2 and acFiboLines and acFlAlt ? line2272_2 : na, title='-1.272', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 
 
 //VBCB
@@ -210,7 +263,7 @@ myEma_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), myEma_1)
 myH_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), high)
 myL_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), low)
 
-acRsiEmaLW_1S = input.int(defval = 2, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
+acRsiEmaLW_1S = input.int(defval = 3, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
 acRsiEma_1S = input(defval = true, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 acREIsaretler_1S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 
@@ -478,8 +531,8 @@ fill(p1B, p2B, title='Büyük Bolinger Bölgesi', color=color.lime, transp=100)
 acBoyama = input(defval = false, title = 'Boyama Gözüksün mü?', group="1. Boyama Bölümü")   
 acBoyamaSutun1 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="1. Boyama Bölümü")   
 
-string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
-string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
+string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
+string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
 
 myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
 myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
@@ -491,6 +544,8 @@ float ba1 = switch boyaBir
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -507,6 +562,8 @@ float ma1 = switch boyaBir
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -525,6 +582,8 @@ float ba2 = switch boyaIki
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -541,6 +600,8 @@ float ma2 = switch boyaIki
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -562,8 +623,8 @@ bgcolor(acBoyamaSutun1 and ma1 ? myBoya : acBoyamaSutun1 and ma2 ?  myBoya : na)
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
 acBoyamaSutun2 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="2. Boyama Bölümü")   
 
-string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
-string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
+string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
+string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 
 myRenkBir2 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
 myRenkIki2 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
@@ -575,6 +636,8 @@ float ba12 = switch boyaBir2
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -591,6 +654,8 @@ float ma12 = switch boyaBir2
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -609,6 +674,8 @@ float ba22 = switch boyaIki2
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -625,6 +692,8 @@ float ma22 = switch boyaIki2
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -646,8 +715,8 @@ bgcolor(acBoyamaSutun2 and ma12 ? myBoya2 : acBoyamaSutun2 and ma22 ?  myBoya2 :
 acBoyama3 = input(defval = false, title = 'Boyama Gözüksün mü?', group="3. Boyama Bölümü")   
 acBoyamaSutun3 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="3. Boyama Bölümü")   
 
-string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
-string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
+string boyaBir3 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
+string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="3. Boyama Bölümü")
 
 myRenkBir3 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="3. Boyama Bölümü") 
 myRenkIki3 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="3. Boyama Bölümü") 
@@ -659,6 +728,8 @@ float ba13 = switch boyaBir3
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -675,6 +746,8 @@ float ma13 = switch boyaBir3
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -693,6 +766,8 @@ float ba23 = switch boyaIki3
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -709,6 +784,8 @@ float ma23 = switch boyaIki3
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -730,8 +807,8 @@ bgcolor(acBoyamaSutun3 and ma13 ? myBoya3 : acBoyamaSutun3 and ma23 ?  myBoya3 :
 acBoyama4 = input(defval = false, title = 'Boyama Gözüksün mü?', group="4. Boyama Bölümü")   
 acBoyamaSutun4 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="4. Boyama Bölümü")   
 
-string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
-string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
+string boyaBir4 = input.string(defval = "xMA100", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
+string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="4. Boyama Bölümü")
 
 myRenkBir4 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="4. Boyama Bölümü") 
 myRenkIki4 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="4. Boyama Bölümü") 
@@ -743,6 +820,8 @@ float ba14 = switch boyaBir4
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -759,6 +838,8 @@ float ma14 = switch boyaBir4
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -777,6 +858,8 @@ float ba24 = switch boyaIki4
 	"xMA200" => xMA_200
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
@@ -793,6 +876,8 @@ float ma24 = switch boyaIki4
 	"xMA200" => xMA_200Src
 	"xMum" => close
 	"Kama" => nAMA
+	"Altın Çizgi" => filt
+	"Mavilim" => MAVW 
 	"Rsi/Ema 1" => myRsiEmaLine_1S
 	"Rsi/Ema 2" => myRsiEmaLine_2S
 	"Rsi/Ema 3" => myRsiEmaLine_3S
