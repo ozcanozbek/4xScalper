@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.3.3", shorttitle = "4xScalper", overlay=true)
+indicator(title ="4xScalper", shorttitle = "4xScalper - V1.3.4", overlay=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -71,6 +71,9 @@ acxMa50Cizgisi = input.bool(defval = true, title = 'xMA50 Çizgisi Gözüksün m
 acxMa100Cizgisi = input.bool(defval = true, title = 'xMA100 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
 acxMa200Cizgisi = input.bool(defval = true, title = 'xMA200 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
 
+//Tablo
+acTabloPanoOzet = input(defval = false, title = 'Direnç, Destek ve Fiyat Tablosu Gösterilsin mi?', group="Tablo Ayarları")  
+
 
 
 acKama = input(false, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
@@ -113,6 +116,8 @@ if xKullanim=="Gelişmiş"
     acAltinCizgi := true
     
     mavilimnew := true
+    
+    acTabloPanoOzet := true
 
 if xKullanim=="Çift Bolinger"    
     acxMaCizgisi := true
@@ -126,7 +131,7 @@ if xKullanim=="Çift Bolinger"
     bb_Color := color.new(color.yellow, 0)
     bbb_Color := color.new(color.orange, 0)
 
-
+    acTabloPanoOzet := true
 //kama
 kama_col = input.color(color.new(#00bcd4, 0),'KAMA Renk',inline='col', group="Kama Ayarları")
 xPrice = close
@@ -203,9 +208,6 @@ acFlOrta = input(defval = true, title = 'Fibo Orta Yatay Çizgileri Gözüksün 
 acFlAlt = input(defval = true, title = 'Fibo Alt Yatay Çizgileri Gözüksün mü?', group="Fibo Ayarları")   
 fibLen = input(defval = 200, title = 'Fibo Hesaplama Mum Sayısı', group="Fibo Ayarları")  
 
-
-//
-acTabloPanoOzet = input(defval = false, title = 'Direnç, Destek ve Fiyat Tablosu Gösterilsin mi?', group="Tablo Ayarları")  
 
 
 //Fiblines
@@ -507,7 +509,6 @@ string xMaTip50 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA
 string xMaTip100 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "xMA100 tipi", group="xMA100 Değerleri")
 string xMaTip200 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "xMA200 tipi", group="xMA200 Değerleri")
         
-
 
 xMA_21_Color = color.new(color.white, 0)
 xMA_50_Color = color.new(color.yellow, 0)
@@ -1004,7 +1005,7 @@ bgcolor(acBoyamaSutun4 and ma14 ? myBoya4 : acBoyamaSutun4 and ma24 ?  myBoya4 :
 
 
 
-var table tblPanoOzet = table.new(position.bottom_right, 2, 4, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
+var table tblPanoOzet = table.new(position.top_right, 2, 4, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
 table.clear(tblPanoOzet, 0, 0, 1, 3)
 
 if barstate.islast
