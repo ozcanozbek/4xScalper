@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper - V1.3.3", shorttitle = "4xScalper", overlay=true, timeframe="", timeframe_gaps=true)
+indicator(title ="4xScalper - V1.3.3", shorttitle = "4xScalper", overlay=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -60,40 +60,94 @@ xMaMumKontrol(xMaMumTip)=>
         
 src = input(close, 'Source', group="Genel Ayarlar")
 
+string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "4 XMA", "Çift Bolinger", "Gelişmiş", "Varsayılan"] , group="Genel Ayarlar")
 
 
-acxMaCizgisi = input(defval = false, title = 'xMA Çizgileri Gözüksün mü?', group="xMA Çizgileri")  
-acxMa21Cizgisi = input(defval = true, title = 'xMA21 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
-acxMa50Cizgisi = input(defval = true, title = 'xMA50 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
-acxMa100Cizgisi = input(defval = true, title = 'xMA100 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
-acxMa200Cizgisi = input(defval = true, title = 'xMA200 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
+
+
+acxMaCizgisi = input.bool(defval = false, title = 'xMA Çizgileri Gözüksün mü?', group="xMA Çizgileri")  
+acxMa21Cizgisi = input.bool(defval = true, title = 'xMA21 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
+acxMa50Cizgisi = input.bool(defval = true, title = 'xMA50 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
+acxMa100Cizgisi = input.bool(defval = true, title = 'xMA100 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
+acxMa200Cizgisi = input.bool(defval = true, title = 'xMA200 Çizgisi Gözüksün mü?', group="xMA Çizgileri")   
+
+
+
+acKama = input(false, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
+lengthKama = input.int(21, minval=1, group="Kama Ayarları")
+
+acBb = input(defval = false, title = 'Bolinger Çizgileri Gözüksün mü?', group="Küçük Bolinger Bölümü")   
+acBbB = input(defval = false, title = 'Büyük Bolinger Çizgisi Gözüksün mü?', group="Büyük Bolinger Bölümü")   
+
+acAltinCizgi = input(defval = false, title = 'Altın Cizgisi Gözüksün mü?', group="Altın Çizgi Ayarları") 
+
+mavilimnew = input(false, title='Mavilim Yeni Çizgisi Gösterilsin mi?', group="Mavilim Ayarları")
+
+
+bb_Color = color.new(color.orange, 0)
+bbb_Color = color.new(color.lime, 0)
+
+//KULLANIM
+if xKullanim=="Boş"
+    acxMaCizgisi := false
+    acxMa21Cizgisi := false
+    acxMa50Cizgisi := false
+    acxMa100Cizgisi := false
+    acxMa200Cizgisi := false
+if xKullanim=="4 XMA"
+    acxMaCizgisi := true
+    acxMa21Cizgisi := true
+    acxMa50Cizgisi := true
+    acxMa100Cizgisi := true
+    acxMa200Cizgisi := true
+if xKullanim=="Gelişmiş"
+    acxMaCizgisi := true
+    acxMa21Cizgisi := true
+    acxMa50Cizgisi := false
+    acxMa100Cizgisi := false
+    acxMa200Cizgisi := true
+
+    acKama := true
+    lengthKama := 68 
+    
+    acAltinCizgi := true
+    
+    mavilimnew := true
+
+if xKullanim=="Çift Bolinger"    
+    acxMaCizgisi := true
+    acxMa21Cizgisi := true
+    acxMa50Cizgisi := false
+    acxMa100Cizgisi := false
+    acxMa200Cizgisi := true
+    acBb := true
+    acBbB := true
+
+    bb_Color := color.new(color.yellow, 0)
+    bbb_Color := color.new(color.orange, 0)
 
 
 //kama
-acKama = input(false, title='KAMA Çizgisi Gösterilsin mi?', group="Kama Ayarları")
-
-
-Length = input.int(21, minval=1, group="Kama Ayarları")
 kama_col = input.color(color.new(#00bcd4, 0),'KAMA Renk',inline='col', group="Kama Ayarları")
 xPrice = close
 xvnoise = math.abs(xPrice - xPrice[1])
 nAMA = 0.0
 nfastend = 0.666
 nslowend = 0.0645
-nsignal = math.abs(xPrice - xPrice[Length])
-nnoise = math.sum(xvnoise, Length)
+nsignal = math.abs(xPrice - xPrice[lengthKama])
+nnoise = math.sum(xvnoise, lengthKama)
 nefratio = nnoise != 0 ? nsignal / nnoise : 0
 nsmooth = math.pow(nefratio * (nfastend - nslowend) + nslowend, 2)
 nAMA := nz(nAMA[1]) + nsmooth * (xPrice - nz(nAMA[1]))
 plot(acKama and nAMA ? nAMA : na , color=kama_col, title='KAMA',linewidth=3)
 
 
-//Altın Çizgisi
 
+//Altın Çizgisi
 srcAltin = input(defval=hlcc4, title='Source', group="Altın Çizgi Ayarları")
 per = input.int(defval=230, minval=1, title='Örnekleme periyodu', group="Altın Çizgi Ayarları")
 mult = input.float(defval=2.0, minval=0.1, title='Aralık carpanı', group="Altın Çizgi Ayarları")
-acAltinCizgi = input(defval = false, title = 'Altın Cizgisi Gözüksün mü?', group="Altın Çizgi Ayarları") 
+
 
 smoothrng(x, t, m) =>
     wper = t * 2 - 1
@@ -122,8 +176,7 @@ filtplot = plot(filt and acAltinCizgi ? filt : na, color=filtcolor, linewidth=3,
 
 
 //Mavilim
-mavilimnew = input(false, title='Mavilim Yeni Çizgisi Gösterilsin mi?', group="Mavilim Ayarları")
-fmal = input(3, 'First Moving Average length', group="Mavilim Ayarları")
+fmal = input(2, 'First Moving Average length', group="Mavilim Ayarları")
 smal = input(1, 'Second Moving Average length', group="Mavilim Ayarları")
 tmal = fmal + smal
 Fmal = smal + tmal
@@ -150,6 +203,9 @@ acFlOrta = input(defval = true, title = 'Fibo Orta Yatay Çizgileri Gözüksün 
 acFlAlt = input(defval = true, title = 'Fibo Alt Yatay Çizgileri Gözüksün mü?', group="Fibo Ayarları")   
 fibLen = input(defval = 200, title = 'Fibo Hesaplama Mum Sayısı', group="Fibo Ayarları")  
 
+
+//
+acTabloPanoOzet = input(defval = false, title = 'Direnç, Destek ve Fiyat Tablosu Gösterilsin mi?', group="Tablo Ayarları")  
 
 
 //Fiblines
@@ -184,7 +240,7 @@ line2272_2 = srcHigh - diff * 2.272
 //plot(line2272 and acFiboLines and acFlUst ? line2272 : na, title='2.272', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 //plot(line2000 and acFiboLines and acFlUst ? line2000 : na, title='2.000', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 //plot(line1618 and acFiboLines and acFlUst ? line1618 : na, title='1.618', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line1414 and acFiboLines and acFlUst ? line1414 : na, title='1.414', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line1414 and acFiboLines and acFlUst ? line1414 : na, title='1.414', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1272 and acFiboLines and acFlUst ? line1272 : na, title='1.272', color=color.new(color.green, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line1000 and acFiboLines and acFlOrta ? line1000 : na, title='1.000', color=color.new(#2E9AFE, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=2)
 plot(line0786 and acFiboLines and acFlOrta ? line0786 : na, title='0.786', color=color.new(#2E9AFE, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
@@ -194,9 +250,9 @@ plot(line0382 and acFiboLines and acFlOrta ? line0382 : na, title='0.382', color
 plot(line0236 and acFiboLines and acFlOrta ? line0236 : na, title='0.236', color=color.new(#2E9AFE, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 plot(line0000 and acFiboLines and acFlOrta ? line0000 : na, title='0.000', color=color.new(#2E9AFE, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=2)
 plot(line1272_2 and acFiboLines and acFlAlt ? line1272_2 : na, title='-0.272', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line1414_2 and acFiboLines and acFlAlt ? line1414_2 : na, title='-0.414', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line1618_2 and acFiboLines and acFlAlt ? line1618_2 : na, title='-0.618', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
-plot(line2000_2 and acFiboLines and acFlAlt ? line2000_2 : na, title='-1.000', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line1414_2 and acFiboLines and acFlAlt ? line1414_2 : na, title='-0.414', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line1618_2 and acFiboLines and acFlAlt ? line1618_2 : na, title='-0.618', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
+//plot(line2000_2 and acFiboLines and acFlAlt ? line2000_2 : na, title='-1.000', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 //plot(line2272_2 and acFiboLines and acFlAlt ? line2272_2 : na, title='-1.272', color=color.new(color.red, 0), style=plot.style_cross, trackprice=true, offset=-9999, linewidth=1)
 
 
@@ -464,12 +520,24 @@ xMA_100_Color_koyu = color.new(color.blue, 50)
 xMA_200_Color_koyu = color.new(#be660b, 50)
 
 
+//KULLANIM
+if xKullanim=="Gelişmiş"
+    xMA_21_Color_koyu := color.new(#ff0000, 0)
+    xMA_200_Color := color.new(#00e676, 0)
+    xMA_200_Color_koyu := color.new(#ff0000, 0)
+if xKullanim=="Çift Bolinger"
+    xMA_21_Color_koyu := color.new(#ff0000, 0)
+    xMA_200_Color := color.new(#00e676, 0)
+    xMA_200_Color_koyu := color.new(#ff0000, 0)
+    
+
+
 length2a = input(21, 'xMA 21', group="xMA21 Değerleri")
 xMaMum21Src = xMaMumKontrol(xMAMum21)
 xMA_21 = xMaKontrol(xMaTip21, close, length2a) 
 xMA_21Src = request.security(syminfo.tickerid,xMaMum21Src, xMA_21)
 xMA_21_Color_S = xMA_21Src >= xMA_21Src[1] ? xMA_21_Color :xMA_21_Color_koyu
-xMA_21_Plot = plot(xMA_21Src and acxMaCizgisi and acxMa21Cizgisi ? xMA_21Src : na , color=xMA_21_Color_S , linewidth=3, title='xMa21 Çizgisi')
+xMA_21_Plot = plot(xMA_21Src and acxMaCizgisi and acxMa21Cizgisi ? xMA_21Src : na , color=xMA_21_Color_S , linewidth=2, title='xMa21 Çizgisi', style = plot.style_circles)
 //xMA_21_Plot = plot(xMA_21Src and acxMaCizgisi and acxMa21Cizgisi ? xMA_21Src : na , color=xMA_21_Color , linewidth=3, title='xMa21 Çizgisi')
 
 length4a = input(50, 'xMA 50', group="xMA50 Değerleri")
@@ -496,14 +564,13 @@ xMA_200_Plot = plot(xMA_200Src and acxMaCizgisi and acxMa200Cizgisi ? xMA_200Src
 
 
 //BB
-acBb = input(defval = false, title = 'Bolinger Çizgileri Gözüksün mü?', group="Küçük Bolinger Bölümü")   
+//acBb = input(defval = false, title = 'Bolinger Çizgileri Gözüksün mü?', group="Küçük Bolinger Bölümü")   
 bbLength = input.int(20, minval=1, step=1, title='Küçük Bolinger Uzunluğu', group="Küçük Bolinger Bölümü")
 bbMult = input.float(1.7, minval=0.001, maxval=50.0, step=0.01, title="Küçük Bolinger Standart Sapma", group="Küçük Bolinger Bölümü")
 bbBasis = ta.sma(src, bbLength)
 bbDev = bbMult * ta.stdev(src, bbLength)
 upper = bbBasis + bbDev
 lower = bbBasis - bbDev
-bb_Color = color.new(color.orange, 0)
 
 bolP1 = plot(upper and acBb ? upper : na, "Küçük Bolinger Üst", color=bb_Color, offset = 0, linewidth=2)
 bolP2 = plot(lower and acBb ? lower : na, "Küçük Bolinger Alt", color=bb_Color, offset = 0, linewidth=2)
@@ -511,7 +578,7 @@ fill(bolP1, bolP2, title='Küçük Bolinger Bölgesi', transp=100)
 
 
 //BBB
-acBbB = input(defval = false, title = 'Büyük Bolinger Çizgisi Gözüksün mü?', group="Büyük Bolinger Bölümü")   
+//acBbB = input(defval = false, title = 'Büyük Bolinger Çizgisi Gözüksün mü?', group="Büyük Bolinger Bölümü")   
 bbLengthB = input.int(200, minval=1, step=1, title='Büyük Bolinger Uzunluğu', group="Büyük Bolinger Bölümü")
 bbMultB = input.float(3.18, minval=0.001, maxval=50.0, step=0.01, title="Büyük Bolinger Standart Sapma", group="Büyük Bolinger Bölümü")
 bbBasisB = ta.sma(src, bbLengthB)
@@ -519,11 +586,29 @@ bbDevB = bbMultB * ta.stdev(src, bbLengthB)
 upperB = bbBasisB + bbDevB
 lowerB = bbBasisB - bbDevB
 
-//plot(bbBasisB and acBbB ? bbBasisB  : na, "Büyük Bolinger Orta Çizgi", color=color.lime, offset=0, linewidth=4)
-p1B = plot(upperB and acBbB ? upperB : na, "Büyük Bolinger Üst", color=color.lime, offset=0, linewidth=2)
-p2B = plot(lowerB and acBbB ? lowerB : na, "Büyük Bolinger Alt", color=color.lime, offset=0, linewidth=2)
-fill(p1B, p2B, title='Büyük Bolinger Bölgesi', color=color.lime, transp=100)
 
+//plot(bbBasisB and acBbB ? bbBasisB  : na, "Büyük Bolinger Orta Çizgi", color=color.lime, offset=0, linewidth=4)
+p1B = plot(upperB and acBbB ? upperB : na, "Büyük Bolinger Üst", color=bbb_Color, offset=0, linewidth=3)
+p2B = plot(lowerB and acBbB ? lowerB : na, "Büyük Bolinger Alt", color=bbb_Color, offset=0, linewidth=3)
+fill(p1B, p2B, title='Büyük Bolinger Bölgesi', transp=100)
+
+
+
+
+
+//KULLANIM
+//if xKullanim=="Boş"
+//    acBb := false
+//    acBbB := false
+//if xKullanim=="4 XMA"
+//    acBb := false
+//    acBbB := false
+//if xKullanim=="Gelişmiş"
+//    acBb := false
+//    acBbB := false
+//if xKullanim=="Çift Bolinger"    
+//    acBb := true
+//    acBbB := true
 
 
 
@@ -536,6 +621,19 @@ string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,
 
 myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
 myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
+
+
+
+//KULLANIM
+if xKullanim=="Gelişmiş"
+    boyaBir := "Altın Çizgi"
+    boyaIki := "Kama"
+    acBoyamaSutun1 := true
+    myRenkBir := color.new(#00bcd4, 66)
+    myRenkIki := color.new(color.red, 100) 
+
+
+//BOYAMALAR 1
 
 float ba1 = switch boyaBir
 	"xMA21" => xMA_21
@@ -618,16 +716,27 @@ fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, trans
 bgcolor(acBoyamaSutun1 and ma1 ? myBoya : acBoyamaSutun1 and ma2 ?  myBoya : na)
 
 
-//BOYAMALAR 2
 
+
+//BOYAMALAR 2
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
 acBoyamaSutun2 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="2. Boyama Bölümü")   
 
 string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 
-myRenkBir2 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
-myRenkIki2 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
+myRenkBir2 = input.color(color.new(#089981, 33) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
+myRenkIki2 = input.color(color.new(#ff0000, 66), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
+
+
+
+//KULLANIM
+if xKullanim=="Gelişmiş"
+    acBoyama2 := true
+    boyaBir2 := "Rsi/Ema 1"
+    boyaIki2 := "Altın Çizgi"
+
+//BOYAMALAR 2
 
 float ba12 = switch boyaBir2
 	"xMA21" => xMA_21
@@ -892,5 +1001,247 @@ son4 = plot(acBoyama4 ? ma24 : na, color = color.new(color.white, 100))
 myBoya4 = ba14 >= ba24 ? myRenkBir4 : myRenkIki4 
 fill(ilk4, son4 , title = 'Dördüncü Bölge', color = myBoya4, fillgaps = true, transp=75)
 bgcolor(acBoyamaSutun4 and ma14 ? myBoya4 : acBoyamaSutun4 and ma24 ?  myBoya4 : na)
+
+
+
+var table tblPanoOzet = table.new(position.bottom_right, 2, 4, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
+table.clear(tblPanoOzet, 0, 0, 1, 3)
+
+if barstate.islast
+
+    if acTabloPanoOzet
+
+        table.cell(tblPanoOzet, 0, 0, "Fibo", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblPanoOzet, 1, 0, "Değer", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+
+
+        //tFiboColor = color.new(#131722,0) 
+        tFiboColor = color.new(#434651,0) 
+        tFiyatColorY = color.new(#056656,0) 
+        tFiyatColorD = color.new(color.red,0)
+        
+        t_ust_b = ""
+        t_ust_d = ""
+        t_ust_bc = tFiboColor
+    
+        t_orta_b = ""
+        t_orta_d = ""
+        t_orta_bc = tFiboColor
+
+        t_alt_b = ""
+        t_alt_d = ""
+        t_alt_bc = tFiboColor
+        
+        
+        tFiyat = str.tostring(close, '##.00')  
+        
+        if src > line1414
+            t_ust_b := "Fiyat"
+            t_ust_d := str.tostring(close, '##.00')
+            t_ust_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_orta_b := "Destek (1.414)"
+            t_orta_d := str.tostring(line1414, '##.00')
+            t_orta_bc := tFiboColor
+
+            t_alt_b := "Destek (1.272)"
+            t_alt_d := str.tostring(line1272, '##.00')
+            t_alt_bc := tFiboColor
+        
+        if src <= line1414 and src > line1272
+            t_ust_b := "Direnç (1.414)"
+            t_ust_d := str.tostring(line1414, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (1.272)"
+            t_alt_d := str.tostring(line1272, '##.00')
+            t_alt_bc := tFiboColor
+            
+        if src <= line1272 and src > line1000
+            t_ust_b := "Direnç (1.272)"
+            t_ust_d := str.tostring(line1272, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (1.000)"
+            t_alt_d := str.tostring(line1000, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line1000 and src > line0786
+            t_ust_b := "Direnç (1.000)"
+            t_ust_d := str.tostring(line1000, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (0.786)"
+            t_alt_d := str.tostring(line0786, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0786 and src > line0618
+            t_ust_b := "Direnç (0.789)"
+            t_ust_d := str.tostring(line0786, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (0.618)"
+            t_alt_d := str.tostring(line0618, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0618 and src > line0500
+            t_ust_b := "Direnç (0.618)"
+            t_ust_d := str.tostring(line0618, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (0.500)"
+            t_alt_d := str.tostring(line0500, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0500 and src > line0382
+            t_ust_b := "Direnç (0.500)"
+            t_ust_d := str.tostring(line0500, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (0.382)"
+            t_alt_d := str.tostring(line0382, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0382 and src > line0236
+            t_ust_b := "Direnç (0.382)"
+            t_ust_d := str.tostring(line0382, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (0.236)"
+            t_alt_d := str.tostring(line0236, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0236 and src > line0000
+            t_ust_b := "Direnç (0.236)"
+            t_ust_d := str.tostring(line0236, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+            t_alt_b := "Destek (0.000)"
+            t_alt_d := str.tostring(line0000, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line0000 and src > line1272_2
+            t_ust_b := "Direnç (0.000)"
+            t_ust_d := str.tostring(line0000, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (-1.272)"
+            t_alt_d := str.tostring(line1272_2, '##.00')
+            t_alt_bc := tFiboColor
+
+        if src <= line1272_2 and src > line1414_2
+            t_ust_b := "Direnç (-1.272)"
+            t_ust_d := str.tostring(line1272_2, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Fiyat"
+            t_orta_d := str.tostring(close, '##.00')
+            t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+        
+            t_alt_b := "Destek (-1.414)"
+            t_alt_d := str.tostring(line1414_2, '##.00')
+            t_alt_bc := tFiboColor
+        if src <= line1414_2 
+            t_ust_b := "Direnç (-1.272)"
+            t_ust_d := str.tostring(line1272_2, '##.00')
+            t_ust_bc := tFiboColor
+
+            t_orta_b := "Direnç (-1.414)"
+            t_orta_d := str.tostring(line1414_2, '##.00')
+            t_orta_bc := tFiboColor
+
+            t_alt_b := "Fiyat"
+            t_alt_d := str.tostring(close, '##.00')
+            t_alt_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
+
+        
+        //tF0 = src >  line1414 ? tFiyat : na
+        //ps4 = "line1414" + str.tostring(line1414, '##.00') + "\n"
+
+        //myF1 = src <= line1414 and src > line1272 ? myFiyat + "\n" : na
+        //ps3 = "+4: " + str.tostring(line1272, '##.00') + "\n"
+
+        //myF2 = src <= line1272 and src > line1000 ? myFiyat + "\n" : na
+        //ps2 = "+3: " + str.tostring(line1000, '##.00') + "\n"
+
+        //myF3 = src <= line1000 and src > line0786 ? myFiyat + "\n" : na
+        //ps1 = "+2: " + str.tostring(line0786, '##.00') + "\n"
+        
+        //myOA1 = src <= line0786 and src > line0618 ? "\n" + myFiyat : na
+        //poa1 = "\n" + "+1: " + str.tostring(line0618, '##.00') + "\n"
+        
+        //myON1 = src <= line0618 and src > line0500 ? myFiyat + "\n" : na
+        //po0 = " 0: " + str.tostring(line0500, '##.00') + "\n"
+        
+        //myOE1 = src <= line0500 and src > line0382 ? myFiyat + "\n" : na
+        //poe1 = "-1: " + str.tostring(line0382, '##.00') + "\n"
+        
+        
+        //myF4 = src <= line0382 and src > line0236 ? araUA + "\n" + myFiyat + "\n"  : na
+        //pa1 = "\n" + "-2: " + str.tostring(line0236, '##.00') + "\n"
+        
+        //myF5 = src <= line0236 and src > line0000 ? myFiyat + "\n" : na
+        //pa2 = "-3: " + str.tostring(line0000, '##.00') + "\n"
+
+        //myF6 = src <= line0000 and src > line1272_2 ? myFiyat + "\n"  : na
+        //pa3 = "-4: " + str.tostring(line1272_2, '##.00') + "\n"
+
+        //myF7 = src <= line1272_2 and src > line1414_2 ? myFiyat + "\n" : na
+        //pa4 = "-5: " + str.tostring(line1414_2, '##.00') //+ "\n"
+
+        //myF8 = src <= line1414_2 ? "\n" + araUA + "\n" + myFiyat : na
+        
+        
+        
+        
+        
+        table.cell(tblPanoOzet, 0, 1, t_ust_b, text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblPanoOzet, 1, 1, t_ust_d, text_color = color.white, text_size = size.normal, bgcolor=t_ust_bc)
+
+        table.cell(tblPanoOzet, 0, 2, t_orta_b, text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblPanoOzet, 1, 2, t_orta_d, text_color = color.white, text_size = size.normal, bgcolor=t_orta_bc)
+        
+        table.cell(tblPanoOzet, 0, 3, t_alt_b, text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblPanoOzet, 1, 3, t_alt_d, text_color = color.white, text_size = size.normal, bgcolor=t_alt_bc)
+
+
+
+
+
 
 //BURADA BİTTİ
