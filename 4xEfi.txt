@@ -2,7 +2,7 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi - V1.2.1", title="4xEfi")
+indicator(shorttitle="4xEfi - V1.2.2", title="4xEfi")
 acCizgiEFI = input(defval = false, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
 
 //nQQE 
@@ -104,10 +104,10 @@ bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
 plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
 
 
-ustCizgiDeger = input.int(75, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
+ustCizgiDeger = input.int(25, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
 plot(ustCizgiDeger, color=ColorSQZMOM, title="Üst Çizgisi (SQZMOM)",linewidth=3)
 
-altCizgiDeger = input.int(-5, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
+altCizgiDeger = input.int(15, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
 plot(altCizgiDeger, color=myNQQE, title="Alt Çizgisi (nQQE)",linewidth=3)
 
 
