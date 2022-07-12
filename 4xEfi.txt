@@ -2,7 +2,7 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi v1.2.0", title="4xEfi")
+indicator(shorttitle="4xEfi - V1.2.1", title="4xEfi")
 acCizgiEFI = input(defval = false, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
 
 //nQQE 
@@ -141,13 +141,15 @@ d = vfi - vfima
 
 //mySartAl = ta.ema(ta.change(close) * volume, length)>=0 and ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD)
 //mySartAl = ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and efi>0
-mySartAl = ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and efi>0 and vfi >= vfima
+//mySartAl = ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and efi>0 and vfi >= vfima
+mySartAl = vfi >= vfima
 mySartAlSinyal = mySartAl[1]==false and mySartAl
 
 
 //mySartSat = ta.ema(ta.change(close) * volume, length)<0 or ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD)
 //mySartSat = ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus
-mySartSat = ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and vfi < vfima
+//mySartSat = ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and vfi < vfima
+mySartSat = vfi < vfima
 mySartSatSinyal = mySartSat[1]==false and mySartSat
 
 plotshape(mySartAlSinyal, title ='AL Fırsatı İşareti', text='', style=shape.triangleup, location=location.bottom, color=color.new(#00e676, 0), offset=0, size=size.tiny)
