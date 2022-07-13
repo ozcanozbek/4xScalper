@@ -209,8 +209,8 @@ boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
 myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
 //fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
 bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
+myColor := (plus >= minus and adx[1]<adx) ?  color.new(color.lime,0) : (efi>=0) ? myColorY : myColorD
 plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
-
 
 
 
@@ -535,8 +535,6 @@ if barstate.islast
         table.cell(tblDetay, 5, 7, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 6, 7, k07, text_color = color.white, text_size = size.normal, bgcolor=l07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 7, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z07 ? color.new(color.lime,50) : color.new(#ff0000,0))
-
-
 
 
 
