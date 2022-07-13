@@ -2,8 +2,88 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi - V1.2.2", title="4xEfi")
+indicator(shorttitle="4xEfi - V1.3.1", title="4xEfi")
 acCizgiEFI = input(defval = false, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
+
+demaHesapla(mySrc,len)=>
+    ema1 = ta.ema(close, len)
+    ema2 = ta.ema(ema1, len)
+    (2 * ema1) - ema2  
+
+temaHesapla(mySrc,len)=>
+    ema1 = ta.ema(close, len)
+    ema2 = ta.ema(ema1, len)
+    ema3 = ta.ema(ema2, len)
+    3 * (ema1 - ema2) + ema3  
+
+xMaKontrol(xMaTip, mySrc, len)=>
+    float xMA = switch xMaTip
+        "EMA" => ta.ema(close, len) 
+        "SMA" => ta.sma(close, len) 
+        "HMA" => ta.hma(close, len) 
+        "RMA" => ta.rma(close, len) 
+        "WMA" => ta.wma(close, len) 
+        "VWMA" => ta.vwma(close, len)
+        "(D)EMA" => demaHesapla(close,len)
+        "(T)EMA" => temaHesapla(close,len)
+        => 0.0 
+
+xMaMumKontrol(xMaMumTip)=>
+    string xMA = switch xMaMumTip
+        "1 Dakika" => "1"
+        "5 Dakika" => "5"
+        "15 Dakika" => "15"
+        "30 Dakika" => "30"
+        "1 Saat" => "60" 
+        "2 Saat" => "120" 
+        "4 Saat" => "240" 
+        "1 Gün" => "D"
+        "1 Hafta" => "W"
+        "3 Hafta" => "3W"
+        "1 Ay" => "M"
+        "5 Hafta" => "5W"
+        => str.tostring(timeframe.period)
+
+
+src=close
+
+
+
+
+
+
+//Altın Çizgisi
+srcAltin = input(defval=hlcc4, title='Source', group="Altın Çizgi Ayarları")
+per = input.int(defval=230, minval=1, title='Örnekleme periyodu', group="Altın Çizgi Ayarları")
+multA = input.float(defval=2.0, minval=0.1, title='Aralık carpanı', group="Altın Çizgi Ayarları")
+
+
+smoothrng(x, t, m) =>
+    wper = t * 2 - 1
+    avrng = ta.ema(math.abs(x - x[1]), t)
+    smoothrng = ta.ema(avrng, wper) * m
+    smoothrng
+smrng = smoothrng(srcAltin, per, multA)
+
+rngfilt(x, r) =>
+    rngfilt = x
+    rngfilt := x > nz(rngfilt[1]) ? x - r < nz(rngfilt[1]) ? nz(rngfilt[1]) : x - r : x + r > nz(rngfilt[1]) ? nz(rngfilt[1]) : x + r
+    rngfilt
+filt = rngfilt(srcAltin, smrng)
+
+// Filter Direction
+upward = 0.0
+upward := filt > filt[1] ? nz(upward[1]) + 1 : filt < filt[1] ? 0 : nz(upward[1])
+downward = 0.0
+downward := filt < filt[1] ? nz(downward[1]) + 1 : filt > filt[1] ? 0 : nz(downward[1])
+
+
+// Colors
+filtcolor = upward > 0 ? color.new(color.lime,0) : downward > 0 ? color.new(#ff0000,0) : color.new(color.orange,0) 
+//filtplot = plot(filt and acAltinCizgi ? filt : na, color=filtcolor, linewidth=3, title='Altın Cizgisi')
+
+
+
 
 //nQQE 
 srcNqq = input(close, group="nQQE Ayarlar")
@@ -22,7 +102,7 @@ QDN = QQEF - ATRRSI * 4.236
 QQES = 0.0
 QQES := QUP < nz(QQES[1]) ? QUP : QQEF > nz(QQES[1]) and QQEF[1] < nz(QQES[1]) ? QDN : QDN > nz(QQES[1]) ? QDN : QQEF < nz(QQES[1]) and QQEF[1] > nz(QQES[1]) ? QUP : nz(QQES[1])
 
-myNQQE = ((QQEF >= QQES) ? color.new(color.lime, 0) : color.new(color.red, 0))
+myNQQE = ((QQEF >= QQES) ? color.new(color.lime, 0) : color.new(#ff0000,0))
 //plot(10, color=myNQQE, linewidth=4)
 
 
@@ -50,7 +130,7 @@ lowerKC = maSQZMOM - rangema * multKC
 valSQZMOM = ta.linreg(srcSQZMOM - math.avg(math.avg(ta.highest(high, lengthKC), ta.lowest(low, lengthKC)), ta.sma(close, lengthKC)), lengthKC, 0)
 
 kriterSQZMOM = ((valSQZMOM>0 and valSQZMOM > nz(valSQZMOM[1])) or (valSQZMOM<=0 and valSQZMOM > nz(valSQZMOM[1]))) 
-ColorSQZMOM = kriterSQZMOM ? color.new(color.lime, 0) : color.new(color.red, 0)
+ColorSQZMOM = kriterSQZMOM ? color.new(color.lime, 0) : color.new(#ff0000,0)
 //plot(1, color=ColorSQZMOM, linewidth=4)
 
 
@@ -77,39 +157,6 @@ myRsiD = input.int(14, minval=1, title = "RSI Uzunluğu", group="RSI Ayarları")
 myEmaD = input.int(12, minval=1, title = "EMA Uzunluğu", group="RSI Ayarları")
 myRsi = ta.rsi(myClose,myRsiD)
 myEma = ta.ema(myRsi, myEmaD)
-
-//DMI 
-lensig = input.int(14, title="ADX Smoothing", minval=1, maxval=50, group="DMI Ayarlar")
-len = input.int(14, minval=1, title="DI Length", group="DMI Ayarlar")
-up = ta.change(high)
-down = -ta.change(low)
-plusDM = na(up) ? na : (up > down and up > 0 ? up : 0)
-minusDM = na(down) ? na : (down > up and down > 0 ? down : 0)
-trur = ta.rma(ta.tr, len)
-plus = fixnan(100 * ta.rma(plusDM, len) / trur)
-minus = fixnan(100 * ta.rma(minusDM, len) / trur)
-sum = plus + minus
-adx = 100 * ta.rma(math.abs(plus - minus) / (sum == 0 ? 1 : sum), lensig)
-
-
-boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
-//pAdx = plot(adx, color=boyaAdx, title="ADX",linewidth=2, style =plot.style_circles)
-//pPlus = plot(plus, color=color.new(color.lime,0), title="+DI", linewidth=2)
-//pMinus = plot(minus, color=color.new(color.red,0), title="-DI",linewidth=2)
-
-
-myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
-//fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
-bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
-plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
-
-
-ustCizgiDeger = input.int(25, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
-plot(ustCizgiDeger, color=ColorSQZMOM, title="Üst Çizgisi (SQZMOM)",linewidth=3)
-
-altCizgiDeger = input.int(15, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
-plot(altCizgiDeger, color=myNQQE, title="Alt Çizgisi (nQQE)",linewidth=3)
-
 
 
 //Volume Flow Indicator
@@ -139,24 +186,358 @@ vfima = ta.ema(vfi, signalLength)
 d = vfi - vfima
 
 
-//mySartAl = ta.ema(ta.change(close) * volume, length)>=0 and ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD)
-//mySartAl = ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and efi>0
-//mySartAl = ta.rsi(myClose,myRsiD) > ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and efi>0 and vfi >= vfima
-mySartAl = vfi >= vfima
-mySartAlSinyal = mySartAl[1]==false and mySartAl
+//DMI 
+lensig = input.int(14, title="ADX Smoothing", minval=1, maxval=50, group="DMI Ayarlar")
+len = input.int(14, minval=1, title="DI Length", group="DMI Ayarlar")
+up = ta.change(high)
+down = -ta.change(low)
+plusDM = na(up) ? na : (up > down and up > 0 ? up : 0)
+minusDM = na(down) ? na : (down > up and down > 0 ? down : 0)
+trur = ta.rma(ta.tr, len)
+plus = fixnan(100 * ta.rma(plusDM, len) / trur)
+minus = fixnan(100 * ta.rma(minusDM, len) / trur)
+sum = plus + minus
+adx = 100 * ta.rma(math.abs(plus - minus) / (sum == 0 ? 1 : sum), lensig)
 
 
-//mySartSat = ta.ema(ta.change(close) * volume, length)<0 or ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD)
-//mySartSat = ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus
-//mySartSat = ta.rsi(myClose,myRsiD) <= ta.ema(ta.rsi(myClose,myRsiD), myEmaD) and plus >= minus and vfi < vfima
-mySartSat = vfi < vfima
-mySartSatSinyal = mySartSat[1]==false and mySartSat
+boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
+//pAdx = plot(adx, color=boyaAdx, title="ADX",linewidth=2, style =plot.style_circles)
+//pPlus = plot(plus, color=color.new(color.lime,0), title="+DI", linewidth=2)
+//pMinus = plot(minus, color=color.new(color.red,0), title="-DI",linewidth=2)
 
-plotshape(mySartAlSinyal, title ='AL Fırsatı İşareti', text='', style=shape.triangleup, location=location.bottom, color=color.new(#00e676, 0), offset=0, size=size.tiny)
-alertcondition(mySartAlSinyal, title = "myEfi AF", message = "1d myEfi AF {{ticker}}, FİYAT={{close}}")
 
-plotshape(mySartSatSinyal, title ='SAT Fırsatı İşareti', text='', style=shape.triangledown, location=location.top, color=color.new(#ff0000, 0), offset=0, size=size.tiny)
-alertcondition(mySartSatSinyal, title = "myEfi SF", message = "1d myEfi SF {{ticker}}, FİYAT={{close}}")
+myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
+//fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
+bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
+plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
+
+
+
+
+zirveCizgiDeger = input.int(50, title = "Zirve Çizgisi (Altın) Seviye Değeri", group="DMI Ayarlar" )
+plot(zirveCizgiDeger, color=filtcolor, title="Zirve Çizgisi (Altın)",linewidth=3)
+
+
+
+ustCizgiDeger = input.int(35, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
+plot(ustCizgiDeger, color=ColorSQZMOM, title="Üst Çizgisi (SQZMOM)",linewidth=3)
+
+
+myVFIcolor = (vfi > vfima) ? color.new(color.lime,0) : color.new(#ff0000,0)
+
+ortaCizgiDeger = input.int(25, title = "Orta Çizgisi (VFI) Seviye Değeri", group="DMI Ayarlar" )
+plot(ortaCizgiDeger, color=myVFIcolor, title="Orta Çizgisi (VFI)",linewidth=3)
+
+
+altCizgiDeger = input.int(15, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
+plot(altCizgiDeger, color=myNQQE, title="Alt Çizgisi (nQQE)",linewidth=3)
+
+
+
+
+
+//MAVILIM
+fmal = 3
+smal = 1
+tmal = fmal + smal
+Fmal = smal + tmal
+Ftmal = tmal + Fmal
+Smal = Fmal + Ftmal
+
+M1 = ta.wma(close, fmal)
+M2 = ta.wma(M1, smal)
+M3 = ta.wma(M2, tmal)
+M4 = ta.wma(M3, Fmal)
+M5 = ta.wma(M4, Ftmal)
+MAVW = ta.wma(M5, Smal)
+
+
+//TREND
+string xMAMum21 = input.timeframe(defval = "Grafik", title = "Trend Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Trend Değerleri")
+string xMaTip21 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "Trend Tipi", group="Trend Değerleri")
+length2a = input(21, 'Trend Uzunluk', group="Trend Değerleri")
+
+xMaMum21Src = xMaMumKontrol(xMAMum21)
+xMA_21 = xMaKontrol(xMaTip21, close, length2a) 
+xMA_21Src = request.security(syminfo.tickerid,xMaMum21Src, xMA_21)
+
+sure = str.tostring(xMaMum21Src)
+mySure = str.length(sure)>0 ? sure : str.tostring(timeframe.period)
+
+
+//Baraj
+string xMAMum200 = input.timeframe(defval = "Grafik", title = "Baraj Çalışma Mumu" ,options=["Grafik", "1 Dakika", "5 Dakika", "15 Dakika", "30 Dakika", "1 Saat", "2 Saat", "4 Saat", "1 Gün", "1 Hafta", "3 Hafta", "1 Ay", "5 Hafta"] , group="Baraj Ayarları")
+string xMaTip200 = input.string(defval="SMA", options = ["EMA", "(D)EMA", "(T)EMA", "SMA", "HMA", "RMA", "WMA", "VWMA"], title=  "Baraj Tipi", group="Baraj Ayarları")
+length4a = input(200, 'Baraj Uzunluk', group="Baraj Ayarları")
+xMaMum200Src = xMaMumKontrol(xMAMum200)
+xMA_200 = xMaKontrol(xMaTip200, close, length4a) 
+xMA_200Src = request.security(syminfo.tickerid,xMaMum200Src, xMA_200)
+
+
+
+
+//TABLO
+acTablo = input(defval = true, title = 'Özet Tablo, Gösterilsin mi?', group="Pano Ayarları")  
+acTabloCep = input(defval = true, title = 'Özet Tablo, Cep Uyumlu Olsun mu?', group="Pano Ayarları")  
+
+acTabloDetay = input(defval = true, title = 'Tablo Detayı, Gösterilsin mi?', group="Pano Ayarları")  
+
+
+//Filtre Trend
+acTrendUst = input(defval = false, title = 'Trend Üstü Kontrolü Yapılsın mı?', group="Filtre Trend Ayarları")  
+acTrendAlt = input(defval = false, title = 'Trend Altı Kontrolü Yapılsın mı?', group="Filtre Trend Ayarları")  
+
+acTrendYukseliyor = input(defval = false, title = 'Trend Artıyor Kontrolü Yapılsın mı?', group="Filtre Trend Ayarları")  
+acTrendDusuyor = input(defval = false, title = 'Trend Düşüyor Kontrolü Yapılsın mı?', group="Filtre Trend Ayarları")  
+
+acEFI = input(defval = true, title = 'EFI>0, Trend Hesaplamasını Etkilesin mi?', group="Filtre Trend Ayarları")  
+acEFIkucuk = input(defval = false, title = 'EFI<0, Trend Hesaplamasını Etkilesin mi?', group="Filtre Trend Ayarları")  
+
+acMavilim = input(defval = false, title = 'Mavilim, Trend Hesaplamasını Etkilesin mi?', group="Filtre Trend Ayarları")
+
+acSma200 = input(defval = false, title = 'Baraj Üstü Olsun mu?', group="Filtre Trend Ayarları")  
+acSma200alti = input(defval = false, title = 'Baraj Altı Olsun mu?', group="Filtre Trend Ayarları")  
+
+
+
+//Filtre Volatilite
+acAdxTrend = input(defval = false, title = 'ADX, Artarak Devam Kontrolü Yapılsın mı?', group="Filtre Volatilite Ayarları")  
+acAdxTrendDusuyor = input(defval = false, title = 'ADX, Düşerek Devam Kontrolü Yapılsın mı?', group="Filtre Volatilite Ayarları")  
+
+acAdxDI = input(defval = true, title = '+DI > -DI, Kontrolü Yapılsın mı?', group="Filtre Volatilite Ayarları")  
+acAdxDIdusuyor = input(defval = false, title = '+DI <= -DI, Kontrolü Yapılsın mı?', group="Filtre Volatilite Ayarları")  
+acAdx = input(defval = false, title = 'ADX Seviyesi Kontrolü Yapılsın mı?', group="Filtre Volatilite Ayarları")  
+adxLenMaks = input.int(60, minval=1, title="ADX Seviyesi Değeri (maksimum)", group="Filtre Volatilite Ayarları")
+adxLenMin = input.int(0, minval=0, title="ADX Seviyesi Değeri (minimum)", group="Filtre Volatilite Ayarları")
+
+
+//Filtre Momentum
+acRsiEmaBuyuk =  input(defval = true, title = 'RSI, Kendi EMA Değerinden Büyük Kontrolü Yapılsın mı?', group="Filtre Momentum Ayarları")  
+acRsiEmaKucuk =  input(defval = false, title = 'RSI, Kendi EMA Değerinden Küçük Kontrolü Yapılsın mı?', group="Filtre Momentum Ayarları")  
+acRsiYukseliyor =  input(defval = false, title = 'RSI, Yükseliyor Kontrolü Yapılsın mı?', group="Filtre Momentum Ayarları")  
+acRsiDusuyor =  input(defval = false, title = 'RSI, Düşüyor Kontrolü Yapılsın mı?', group="Filtre Momentum Ayarları")  
+
+acRsiSeviye =  input(defval = false, title = 'RSI Seviyesi Kontrolü Yapılsın mı?', group="Filtre Momentum Ayarları")  
+RsiSeviyeMaks = input.float(60.0, minval=1.0, step=0.01, title="RSI Seviyesi Değeri (maksimum)", group="Filtre Momentum Ayarları")
+RsiSeviyeMin = input.float(0.0, minval=0.0, step=0.01, title="RSI Seviyesi Değeri (minimum)", group="Filtre Momentum Ayarları")
+
+
+
+
+
+//Koşul Trend
+kosulTrend = acTrendUst ? (close > xMaKontrol(xMaTip21, close, length2a)) : true
+kosulTrendAlt = acTrendAlt ? (close < xMaKontrol(xMaTip21, close, length2a)) : true
+kosulTrendArtiyor = acTrendYukseliyor ?  (xMaKontrol(xMaTip21, close, length2a) > xMaKontrol(xMaTip21, close, length2a)[1]) : true
+kosulTrendDusuyor = acTrendDusuyor ?  (xMaKontrol(xMaTip21, close, length2a) < xMaKontrol(xMaTip21, close, length2a)[1]) : true
+
+kosulEfi = acEFI ? efi>0 : true
+kosulEfiKucuk = acEFIkucuk ? efi<0 : true
+
+
+
+kosulMavilim = acMavilim ? (close>MAVW) : true
+kosulBaraj = acSma200 ? close > xMaKontrol(xMaTip200, close, length4a) : true
+kosulBarajAlti = acSma200alti ? close < xMaKontrol(xMaTip200, close, length4a) : true
+
+
+
+kosullarTrend = kosulTrend and kosulTrendAlt and kosulTrendArtiyor and kosulTrendDusuyor and kosulEfi and kosulEfiKucuk and kosulMavilim and kosulBaraj and kosulBarajAlti
+//kosullarTrend = kosulTrend and kosulTrendAlt and kosulEfi and kosulBaraj 
+
+
+//Koşul Volatilite
+kosulAdx = acAdx ? (adx>=adxLenMin and adx<=adxLenMaks) : true 
+kosulAdxTrend = acAdxTrend ? (adx>=adx[1]) : true
+kosulAdxTrendDusuyor = acAdxTrendDusuyor ? (adx<adx[1]) : true
+kosulAdxDI =  acAdxDI ? ((plus - minus) >= 0) : true
+kosulAdxDIdusuyor =  acAdxDIdusuyor ? ((plus - minus) <= 0) : true
+
+
+kosullarVolatilite = kosulAdx and kosulAdxTrend and kosulAdxTrendDusuyor and kosulAdxDI and kosulAdxDIdusuyor
+//kosullarVolatilite = kosulAdxDI 
+
+
+//myRsi = ta.rsi(close,myRsiD)
+//myEma = ta.ema(ta.rsi(close,myRsiD), myEmaD)
+
+//Koşul Momentum
+kosulRsiEmaBuyuk =  acRsiEmaBuyuk ? (ta.rsi(close,myRsiD)>ta.ema(ta.rsi(close,myRsiD), myEmaD)) : true
+kosulRsiEmaKucuk =  acRsiEmaKucuk ? (ta.rsi(close,myRsiD)<ta.ema(ta.rsi(close,myRsiD), myEmaD)) : true
+kosulRsiYukseliyor = acRsiYukseliyor ? (ta.rsi(close,myRsiD)>ta.rsi(close,myRsiD)[1]) : true
+kosulRsiDusuyor = acRsiDusuyor ? (ta.rsi(close,myRsiD)<ta.rsi(close,myRsiD)[1]) : true
+kosulRsiSeviye = acRsiSeviye ? (ta.rsi(close,myRsiD)>RsiSeviyeMin and ta.rsi(close,myRsiD)<RsiSeviyeMaks) : true
+
+
+kosullarMomentum = kosulRsiEmaBuyuk and kosulRsiEmaKucuk and kosulRsiYukseliyor and kosulRsiDusuyor and kosulRsiSeviye
+//kosullarMomentum = kosulRsiEmaBuyuk 
+
+
+
+//Formül
+sart = kosullarTrend and kosullarVolatilite and kosullarMomentum
+
+//Koşul
+//sart = (acEFI ? efi>0 : true) and close > xMaKontrol(xMaTip21, close, length2a) and xMaKontrol(xMaTip21, close, length2a) > xMaKontrol(xMaTip21, close, length2a)[1] and (acSma200 ? close > xMaKontrol(xMaTip200, close, length4a) : true)  
+
+
+//Formül
+customFunc() => [sart, str.tostring(math.round(close[1],2),"#.00"), str.tostring(math.round(close,2),"#.00"), str.tostring(math.round(((close-close[1])/close[1])*100,2)), close-close[1]>=0, (sart[1]==false and sart==true), str.tostring(ta.rsi(close,myRsiD),"#"), ta.rsi(close,myRsiD)>ta.ema(ta.rsi(close,myRsiD), myEmaD), (close > xMaKontrol(xMaTip21, close, length2a)), close > xMaKontrol(xMaTip200, close, length4a), str.tostring(adx,"#.00")]
+
+
+
+[s1,e1,a1,o1,y1,z1,k1,l1,t1,b1] = request.security(syminfo.tickerid, sure, customFunc())
+
+//s1 şart var mı?
+//e1 eski fiyat
+//a1 geçerli fiyat
+//o1 fiyat artış %
+//y1 fiyat artmış mı?
+//z1 sart ilk kez gerçekleştiyse alarm var (yani önceki adımda şart yoktu)
+
+//k1 RSI
+//l1 RSI ema'sından büyük mü?
+
+//t1 Trend üstünde mi?
+//b1 Baraj üstünde mi?
+
+//adx adx değeri
+//adxa1 adx artıyor mu?
+//efi1 efi>0 şartı
+//di1 -DI>-DI
+
+//plotshape(s1, title ='AL Fırsatı Sürekli İşareti', text='', style=shape.triangleup, location=location.top, color=color.lime, offset=0, size=size.tiny)
+
+//plotshape(z1, title ='AL Fırsatı İşareti', text='', style=shape.triangleup, location=location.bottom, color=color.lime, offset=0, size=size.small)
+//alertcondition(z1, title = "E34_YANDI_TEK_MTF", message = "AF YANDI {{ticker}}, FİYAT={{close}}")
+
+//plotshape(k1, title ='SAT Fırsatı İşareti', text='', style=shape.triangledown, location=location.bottom, color=color.red, offset=0, size=size.tiny)
+//alertcondition(k1, title = "E34_SONDU_TEK_MTF", message = "SF SONDU {{ticker}}, FİYAT={{close}}")
+
+
+[s01,e01,a01,o01,y01,z01,k01,l01,t01,b01] = request.security(syminfo.tickerid, "1", customFunc()) 
+[s02,e02,a02,o02,y02,z02,k02,l02,t02,b02] = request.security(syminfo.tickerid, "5", customFunc())
+[s03,e03,a03,o03,y03,z03,k03,l03,t03,b03] = request.security(syminfo.tickerid, "15", customFunc())
+[s04,e04,a04,o04,y04,z04,k04,l04,t04,b04] = request.security(syminfo.tickerid, "120", customFunc())
+[s05,e05,a05,o05,y05,z05,k05,l05,t05,b05] = request.security(syminfo.tickerid, "240", customFunc())
+[s06,e06,a06,o06,y06,z06,k06,l06,t06,b06] = request.security(syminfo.tickerid, "D", customFunc())
+[s07,e07,a07,o07,y07,z07,k07,l07,t07,b07] = request.security(syminfo.tickerid, "W", customFunc())
+
+
+var table tblHead = table.new(position.top_right, 12, 1, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white , border_width=1)
+table.clear(tblHead, 0, 0, 11, 0)
+
+var table tblDetay = table.new(position.bottom_left, 8, 8, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
+table.clear(tblDetay, 0, 0, 7, 7)
+
+
+if barstate.islast
+
+    if acTablo
+        //table.cell(tblHead, 0, 0, "Peryod", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 1, "Önce", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 2, "Fiyat", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 3, "%", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 4, "Trend", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 5, "Baraj", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 6, "RSI", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 7, "+DI>-DI", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 8, "ADX", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 9, "EFI>0", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 10, "NQQE", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        //table.cell(tblHead, 0, 11, "Alarm", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        
+        mySize = acTabloCep ? size.tiny : size.normal
+        myNull = acTabloCep ? '\n' : ''
+        
+        table.cell(tblHead, 0, 0, a1 +  myNull + ' %' + o1 , text_color = color.white, text_size = mySize, bgcolor=y1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 1, 0, 'x' + myNull + '20', text_color = color.white, text_size = mySize, bgcolor=t1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 2, 0, 'x' + myNull + '2K', text_color = color.white, text_size = mySize, bgcolor=b1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 3, 0, 'Rsi' + myNull + k1, text_color = color.white, text_size = mySize, bgcolor=l1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 4, 0, 'DI', text_color = color.white, text_size = mySize, bgcolor=(plus > minus) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 5, 0, 'Ad' + myNull + str.tostring(adx,"#"), text_color = color.white, text_size = mySize, bgcolor=(adx>adx[1]) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 6, 0, 'Efi', text_color = color.white, text_size = mySize, bgcolor=(efi>0) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 7, 0, 'Al' + myNull + 'tın', text_color = color.white, text_size = mySize, bgcolor=(upward > 0) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 8, 0, 'SQZ' + myNull + 'MOM', text_color = color.white, text_size = mySize, bgcolor=kriterSQZMOM ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 9, 0, 'VFI', text_color = color.white, text_size = mySize, bgcolor=(vfi > vfima) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 10, 0, 'n' + myNull + 'QQE', text_color = color.white, text_size = mySize, bgcolor=(QQEF >= QQES) ? color.new(color.lime,50) : color.new(#ff0000,0))
+
+
+    if acTabloDetay    
+        table.cell(tblDetay, 0, 0, "Peryod", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 1, 0, "Önce", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 2, 0, "Fiyat", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 3, 0, "%", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 4, 0, "Trend", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 5, 0, "Baraj", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 6, 0, "RSI", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 7, 0, "Alarm", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        
+        table.cell(tblDetay, 0, 1, "1 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 1, e01, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 1, a01, text_color = color.white, text_size = size.normal, bgcolor=y01 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 1, o01, text_color = color.white, text_size = size.normal, bgcolor=y01 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 1, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t01 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 1, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b01 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 1, k01, text_color = color.white, text_size = size.normal, bgcolor=l01 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 1, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z01 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 2, "5 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 2, e02, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 2, a02, text_color = color.white, text_size = size.normal, bgcolor=y02 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 2, o02, text_color = color.white, text_size = size.normal, bgcolor=y02 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 2, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t02 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 2, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b02 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 2, k02, text_color = color.white, text_size = size.normal, bgcolor=l02 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 2, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z02 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 3, "15 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 3, e03, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 3, a03, text_color = color.white, text_size = size.normal, bgcolor=y03 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 3, o03, text_color = color.white, text_size = size.normal, bgcolor=y03 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 3, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t03 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 3, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b03 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 3, k03, text_color = color.white, text_size = size.normal, bgcolor=l03 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 3, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z03 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 4, "2 Saat", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 4, e04, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 4, a04, text_color = color.white, text_size = size.normal, bgcolor=y04 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 4, o04, text_color = color.white, text_size = size.normal, bgcolor=y04 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 4, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t04 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 4, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b04 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 4, k04, text_color = color.white, text_size = size.normal, bgcolor=l04 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 4, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z04 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 5, "4 Saat", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 5, e05, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 5, a05, text_color = color.white, text_size = size.normal, bgcolor=y05 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 5, o05, text_color = color.white, text_size = size.normal, bgcolor=y05 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 5, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t05 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 5, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b05 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 5, k05, text_color = color.white, text_size = size.normal, bgcolor=l05 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 5, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z05 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 6, "1 Gün", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 6, e06, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 6, a06, text_color = color.white, text_size = size.normal, bgcolor=y06 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 6, o06, text_color = color.white, text_size = size.normal, bgcolor=y06 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 6, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t06 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 6, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b06 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 6, k06, text_color = color.white, text_size = size.normal, bgcolor=l06 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 6, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z06 ? color.new(color.lime,50) : color.new(#ff0000,0))
+    
+        table.cell(tblDetay, 0, 7, "1 Hafta", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
+        table.cell(tblDetay, 1, 7, e07, text_color = color.white, text_size = size.small)
+        table.cell(tblDetay, 2, 7, a07, text_color = color.white, text_size = size.normal, bgcolor=y07 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 3, 7, o07, text_color = color.white, text_size = size.normal, bgcolor=y07 ? color.new(color.lime,50) : color.new(color.red,0))
+        table.cell(tblDetay, 4, 7, 'Trend', text_color = color.white, text_size = size.normal, bgcolor=t07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 5, 7, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 6, 7, k07, text_color = color.white, text_size = size.normal, bgcolor=l07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 7, 7, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+
+
+
 
 
 //BURADA BİTTİ
