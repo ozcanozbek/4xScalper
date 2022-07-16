@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper", shorttitle = "4xScalper - V1.3.4", overlay=true)
+indicator(title ="4xScalper", shorttitle = "4xScalper - V1.3.6", overlay=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -60,7 +60,7 @@ xMaMumKontrol(xMaMumTip)=>
         
 src = input(close, 'Source', group="Genel Ayarlar")
 
-string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "4 XMA", "Çift Bolinger", "Gelişmiş", "Varsayılan"] , group="Genel Ayarlar")
+string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "4 XMA", "Çift Bolinger", "Gelişmiş", "Sade", "Varsayılan"] , group="Genel Ayarlar")
 
 
 
@@ -115,7 +115,7 @@ if xKullanim=="Gelişmiş"
     
     acAltinCizgi := true
     
-    mavilimnew := true
+    mavilimnew := false
     
     acTabloPanoOzet := true
 
@@ -132,6 +132,21 @@ if xKullanim=="Çift Bolinger"
     bbb_Color := color.new(color.orange, 0)
 
     acTabloPanoOzet := true
+    
+if xKullanim=="Sade"    
+    acxMaCizgisi := false
+    acxMa21Cizgisi := false
+    acxMa50Cizgisi := false
+    acxMa100Cizgisi := false
+    acxMa200Cizgisi := true
+
+    acAltinCizgi := true
+
+    acBb := true
+    bb_Color := color.new(color.yellow, 0)
+    
+    acTabloPanoOzet := true
+    
 //kama
 kama_col = input.color(color.new(#00bcd4, 0),'KAMA Renk',inline='col', group="Kama Ayarları")
 xPrice = close
@@ -321,7 +336,7 @@ myEma_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), myEma_1)
 myH_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), high)
 myL_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), low)
 
-acRsiEmaLW_1S = input.int(defval = 3, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
+acRsiEmaLW_1S = input.int(defval = 2, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
 acRsiEma_1S = input(defval = true, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 acREIsaretler_1S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 
@@ -353,6 +368,11 @@ myRsiColorTek_1S = myRsi_1S >= myEma_1S ? myRsiColorY_1S : myRsiColorD_1S
 myRsiEmaLine_1S = myRsi_1S >= myEma_1S ? myH_1S : myL_1S
 
 
+
+
+
+
+
 // R/E 2
 myRsi_2 = ta.rsi(close,myRsiUzunluk)
 myEma_2 = ta.ema(myRsi_2, myEmaUzunluk)
@@ -374,6 +394,24 @@ my1D_2S = input.color(color.new(color.yellow, 0) , "Alım Bölgesinden (zirvede)
 my2D_2S = input.color(color.new(#ff9800, 0) , "Orta Bölgesinden (ortada) Düşerken", group="Rsi/Ema 2 Değerleri") 
 my3D_2S = input.color(color.new(color.red, 0) , "Satım Bölgesinden (dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
 my4D_2S = input.color(color.new(#880E4F, 0)  , "Aşırı Satım Bölgesinde (en dipte) Düşerken", group="Rsi/Ema 2 Değerleri") 
+
+
+//KULLANIM
+if xKullanim=="Gelişmiş" or xKullanim=="Sade"  
+    acREIsaretler_2S := true
+
+    my4Y_2S := color.new(#00897B, 0) 
+    my3Y_2S := color.new(color.green, 0)
+    my2Y_2S := color.new(#00bcd4, 100)
+    my1Y_2S := color.new(color.blue, 100)
+
+
+    my1D_2S := color.new(color.yellow, 100) 
+    my2D_2S := color.new(#ff9800, 100) 
+    my3D_2S := color.new(color.red, 100) 
+    my4D_2S := color.new(#880E4F, 100) 
+
+
 
 bolge4Y_2S =  myRsi_2S > acAS // >70
 bolge3Y_2S =  myRsi_2S > acS and myRsi_2S <= acAS //70/60
@@ -414,6 +452,39 @@ my1D_3S = input.color(color.new(color.yellow, 0) , "Alım Bölgesinden (zirvede)
 my2D_3S = input.color(color.new(#ff9800, 0) , "Orta Bölgesinden (ortada) Düşerken", group="Rsi/Ema 3 Değerleri") 
 my3D_3S = input.color(color.new(color.red, 0) , "Satım Bölgesinden (dipte) Düşerken", group="Rsi/Ema 3 Değerleri") 
 my4D_3S = input.color(color.new(#880E4F, 0)  , "Aşırı Satım Bölgesinde (en dipte) Düşerken", group="Rsi/Ema 3 Değerleri") 
+
+
+
+//KULLANIM
+if xKullanim=="Gelişmiş"
+    acREIsaretler_3S := true
+    
+    my4Y_3S := color.new(#00897B, 100)  
+    my3Y_3S := color.new(color.green, 100)
+    my2Y_3S := color.new(#00bcd4, 100)
+    my1Y_3S := color.new(color.blue, 0)
+    
+    
+    my1D_3S := color.new(color.yellow, 100) 
+    my2D_3S := color.new(#ff9800, 100) 
+    my3D_3S := color.new(color.red, 0) 
+    my4D_3S := color.new(#880E4F, 0) 
+    
+if xKullanim=="Sade"    
+
+    acREIsaretler_3S := true
+    
+    my4Y_3S := color.new(#00897B, 100)  
+    my3Y_3S := color.new(color.green, 100)
+    my2Y_3S := color.new(#00bcd4, 100)
+    my1Y_3S := color.new(color.blue, 0)
+    
+    
+    my1D_3S := color.new(color.yellow, 100) 
+    my2D_3S := color.new(#ff9800, 100) 
+    my3D_3S := color.new(color.red, 100) 
+    my4D_3S := color.new(#880E4F, 0) 
+
 
 bolge4Y_3S =  myRsi_3S > acAS // >70
 bolge3Y_3S =  myRsi_3S > acS and myRsi_3S <= acAS //70/60
@@ -522,15 +593,17 @@ xMA_200_Color_koyu = color.new(#be660b, 50)
 
 
 //KULLANIM
+
+if xKullanim=="Gelişmiş" or xKullanim=="Çift Bolinger" or xKullanim=="Sade" or xKullanim=="4 XMA"   
+    xMA_200_Color := color.new(#00e676, 0)
+    xMA_200_Color_koyu := color.new(#ff0000, 0)
+if xKullanim=="4 XMA"
+    xMA_21_Color_koyu := color.new(#ff0000, 0)
 if xKullanim=="Gelişmiş"
     xMA_21_Color_koyu := color.new(#ff0000, 0)
-    xMA_200_Color := color.new(#00e676, 0)
-    xMA_200_Color_koyu := color.new(#ff0000, 0)
 if xKullanim=="Çift Bolinger"
     xMA_21_Color_koyu := color.new(#ff0000, 0)
-    xMA_200_Color := color.new(#00e676, 0)
-    xMA_200_Color_koyu := color.new(#ff0000, 0)
-    
+
 
 
 length2a = input(21, 'xMA 21', group="xMA21 Değerleri")
@@ -573,8 +646,8 @@ bbDev = bbMult * ta.stdev(src, bbLength)
 upper = bbBasis + bbDev
 lower = bbBasis - bbDev
 
-bolP1 = plot(upper and acBb ? upper : na, "Küçük Bolinger Üst", color=bb_Color, offset = 0, linewidth=2)
-bolP2 = plot(lower and acBb ? lower : na, "Küçük Bolinger Alt", color=bb_Color, offset = 0, linewidth=2)
+bolP1 = plot(upper and acBb ? upper : na, "Küçük Bolinger Üst", color=bb_Color, offset = 0, linewidth=3)
+bolP2 = plot(lower and acBb ? lower : na, "Küçük Bolinger Alt", color=bb_Color, offset = 0, linewidth=3)
 fill(bolP1, bolP2, title='Küçük Bolinger Bölgesi', transp=100)
 
 
@@ -620,8 +693,8 @@ acBoyamaSutun1 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?',
 string boyaBir = input.string(defval = "xMum", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
 string boyaIki = input.string(defval = "xMA21", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="1. Boyama Bölümü")
 
-myRenkBir = input.color(color.new(color.lime, 50) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
-myRenkIki = input.color(color.new(color.red, 50), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
+myRenkBir = input.color(color.new(color.lime, 67) , "Birinci Sınır Renk", group="1. Boyama Bölümü") 
+myRenkIki = input.color(color.new(color.red, 67), "İkinci Sınır Renk", group="1. Boyama Bölümü") 
 
 
 
@@ -630,8 +703,16 @@ if xKullanim=="Gelişmiş"
     boyaBir := "Altın Çizgi"
     boyaIki := "Kama"
     acBoyamaSutun1 := true
-    myRenkBir := color.new(#00bcd4, 66)
+    myRenkBir := color.new(#00bcd4, 79)
     myRenkIki := color.new(color.red, 100) 
+    
+if xKullanim=="Sade"
+    boyaBir := "Rsi/Ema 1"
+    boyaIki := "Bolinger Üst"
+
+    acBoyama := true
+    myRenkBir := color.new(#00bcd4, 33)
+    myRenkIki := color.new(#ff0000, 100)
 
 
 //BOYAMALAR 1
@@ -717,8 +798,6 @@ fill(ilk, son , title = 'Birinci Bölge', color = myBoya, fillgaps = true, trans
 bgcolor(acBoyamaSutun1 and ma1 ? myBoya : acBoyamaSutun1 and ma2 ?  myBoya : na)
 
 
-
-
 //BOYAMALAR 2
 acBoyama2 = input(defval = false, title = 'Boyama Gözüksün mü?', group="2. Boyama Bölümü")   
 acBoyamaSutun2 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?', group="2. Boyama Bölümü")   
@@ -726,7 +805,7 @@ acBoyamaSutun2 = input(defval = false, title = 'Boyama Sütun Gözüksün mü?',
 string boyaBir2 = input.string(defval = "xMA21", title = "Boya Birinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 string boyaIki2 = input.string(defval = "xMA50", title = "Boya İkinci Sınır" ,options=["xMA21", "xMA50", "xMA100", "xMA200", "xMum", "Kama", "Altın Çizgi", "Mavilim", "Rsi/Ema 1", "Rsi/Ema 2", "Rsi/Ema 3", "Rsi/Ema 4", "Bolinger Üst", "Bolinger Alt", "Büyük Bolinger Üst", "Büyük Bolinger Alt"] , group="2. Boyama Bölümü")
 
-myRenkBir2 = input.color(color.new(#089981, 33) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
+myRenkBir2 = input.color(color.new(#089981, 66) , "Birinci Sınır Renk", group="2. Boyama Bölümü") 
 myRenkIki2 = input.color(color.new(#ff0000, 66), "İkinci Sınır Renk", group="2. Boyama Bölümü") 
 
 
@@ -736,6 +815,15 @@ if xKullanim=="Gelişmiş"
     acBoyama2 := true
     boyaBir2 := "Rsi/Ema 1"
     boyaIki2 := "Altın Çizgi"
+
+if xKullanim=="Sade"
+    acBoyamaSutun2 := true
+    boyaBir2 := "Rsi/Ema 1"
+    boyaIki2 := "Büyük Bolinger Üst"
+
+    myRenkBir2 := color.new(#329034, 66)
+    myRenkIki2 := color.new(#ff0000, 100)
+
 
 //BOYAMALAR 2
 
@@ -831,6 +919,18 @@ string boyaIki3 = input.string(defval = "xMA200", title = "Boya İkinci Sınır"
 myRenkBir3 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="3. Boyama Bölümü") 
 myRenkIki3 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="3. Boyama Bölümü") 
 
+
+//KULLANIM
+if xKullanim=="Sade"
+    acBoyama3 := true
+    boyaBir3 := "Rsi/Ema 1"
+    boyaIki3 := "Bolinger Alt"
+
+    myRenkBir3 := color.new(#329034, 100)
+    myRenkIki3 := color.new(#00bcd4, 33)
+
+//BOYAMALAR 3
+
 float ba13 = switch boyaBir3
 	"xMA21" => xMA_21
 	"xMA50" => xMA_50
@@ -923,6 +1023,17 @@ string boyaIki4 = input.string(defval = "xMA200", title = "Boya İkinci Sınır"
 myRenkBir4 = input.color(color.new(color.lime, 79) , "Birinci Sınır Renk", group="4. Boyama Bölümü") 
 myRenkIki4 = input.color(color.new(color.red, 70), "İkinci Sınır Renk", group="4. Boyama Bölümü") 
 
+//KULLANIM
+if xKullanim=="Sade"
+    acBoyamaSutun4 := true
+    boyaBir4 := "Rsi/Ema 1"
+    boyaIki4 := "Büyük Bolinger Alt"
+
+    myRenkBir4 := color.new(#329034, 100)
+    myRenkIki4 := color.new(#ff0000, 79)
+
+//BOYAMALAR 4
+
 float ba14 = switch boyaBir4
 	"xMA21" => xMA_21
 	"xMA50" => xMA_50
@@ -1005,7 +1116,7 @@ bgcolor(acBoyamaSutun4 and ma14 ? myBoya4 : acBoyamaSutun4 and ma24 ?  myBoya4 :
 
 
 
-var table tblPanoOzet = table.new(position.top_right, 2, 4, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
+var table tblPanoOzet = table.new(position.middle_right, 2, 4, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
 table.clear(tblPanoOzet, 0, 0, 1, 3)
 
 if barstate.islast
@@ -1041,16 +1152,16 @@ if barstate.islast
             t_ust_d := str.tostring(close, '##.00')
             t_ust_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_orta_b := "Destek (1.414)"
+            t_orta_b := "Destek \n(1.414)"
             t_orta_d := str.tostring(line1414, '##.00')
             t_orta_bc := tFiboColor
 
-            t_alt_b := "Destek (1.272)"
+            t_alt_b := "Destek \n(1.272)"
             t_alt_d := str.tostring(line1272, '##.00')
             t_alt_bc := tFiboColor
         
         if src <= line1414 and src > line1272
-            t_ust_b := "Direnç (1.414)"
+            t_ust_b := "Direnç \n(1.414)"
             t_ust_d := str.tostring(line1414, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1058,12 +1169,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (1.272)"
+            t_alt_b := "Destek \n(1.272)"
             t_alt_d := str.tostring(line1272, '##.00')
             t_alt_bc := tFiboColor
             
         if src <= line1272 and src > line1000
-            t_ust_b := "Direnç (1.272)"
+            t_ust_b := "Direnç \n(1.272)"
             t_ust_d := str.tostring(line1272, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1071,12 +1182,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (1.000)"
+            t_alt_b := "Destek \n(1.000)"
             t_alt_d := str.tostring(line1000, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line1000 and src > line0786
-            t_ust_b := "Direnç (1.000)"
+            t_ust_b := "Direnç \n(1.000)"
             t_ust_d := str.tostring(line1000, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1084,12 +1195,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (0.786)"
+            t_alt_b := "Destek \n(0.786)"
             t_alt_d := str.tostring(line0786, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0786 and src > line0618
-            t_ust_b := "Direnç (0.789)"
+            t_ust_b := "Direnç \n(0.789)"
             t_ust_d := str.tostring(line0786, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1097,12 +1208,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (0.618)"
+            t_alt_b := "Destek \n(0.618)"
             t_alt_d := str.tostring(line0618, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0618 and src > line0500
-            t_ust_b := "Direnç (0.618)"
+            t_ust_b := "Direnç \n(0.618)"
             t_ust_d := str.tostring(line0618, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1110,12 +1221,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (0.500)"
+            t_alt_b := "Destek \n(0.500)"
             t_alt_d := str.tostring(line0500, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0500 and src > line0382
-            t_ust_b := "Direnç (0.500)"
+            t_ust_b := "Direnç \n(0.500)"
             t_ust_d := str.tostring(line0500, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1123,12 +1234,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (0.382)"
+            t_alt_b := "Destek \n(0.382)"
             t_alt_d := str.tostring(line0382, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0382 and src > line0236
-            t_ust_b := "Direnç (0.382)"
+            t_ust_b := "Direnç \n(0.382)"
             t_ust_d := str.tostring(line0382, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1136,24 +1247,24 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (0.236)"
+            t_alt_b := "Destek \n(0.236)"
             t_alt_d := str.tostring(line0236, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0236 and src > line0000
-            t_ust_b := "Direnç (0.236)"
+            t_ust_b := "Direnç \n(0.236)"
             t_ust_d := str.tostring(line0236, '##.00')
             t_ust_bc := tFiboColor
 
             t_orta_b := "Fiyat"
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
-            t_alt_b := "Destek (0.000)"
+            t_alt_b := "Destek \n(0.000)"
             t_alt_d := str.tostring(line0000, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line0000 and src > line1272_2
-            t_ust_b := "Direnç (0.000)"
+            t_ust_b := "Direnç \n(0.000)"
             t_ust_d := str.tostring(line0000, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1161,12 +1272,12 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (-1.272)"
+            t_alt_b := "Destek \n(-1.272)"
             t_alt_d := str.tostring(line1272_2, '##.00')
             t_alt_bc := tFiboColor
 
         if src <= line1272_2 and src > line1414_2
-            t_ust_b := "Direnç (-1.272)"
+            t_ust_b := "Direnç \n(-1.272)"
             t_ust_d := str.tostring(line1272_2, '##.00')
             t_ust_bc := tFiboColor
 
@@ -1174,15 +1285,15 @@ if barstate.islast
             t_orta_d := str.tostring(close, '##.00')
             t_orta_bc := src>=src[1] ? tFiyatColorY : tFiyatColorD
         
-            t_alt_b := "Destek (-1.414)"
+            t_alt_b := "Destek \n(-1.414)"
             t_alt_d := str.tostring(line1414_2, '##.00')
             t_alt_bc := tFiboColor
         if src <= line1414_2 
-            t_ust_b := "Direnç (-1.272)"
+            t_ust_b := "Direnç \n(-1.272)"
             t_ust_d := str.tostring(line1272_2, '##.00')
             t_ust_bc := tFiboColor
 
-            t_orta_b := "Direnç (-1.414)"
+            t_orta_b := "Direnç \n(-1.414)"
             t_orta_d := str.tostring(line1414_2, '##.00')
             t_orta_bc := tFiboColor
 
