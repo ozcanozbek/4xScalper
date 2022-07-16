@@ -2,7 +2,7 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi - V1.3.1", title="4xEfi")
+indicator(shorttitle="4xEfi - V1.3.2", title="4xEfi")
 acCizgiEFI = input(defval = false, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
 
 demaHesapla(mySrc,len)=>
@@ -211,6 +211,14 @@ myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66)
 bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
 myColor := (plus >= minus and adx[1]<adx) ?  color.new(color.lime,0) : (efi>=0) ? myColorY : myColorD
 plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
+
+
+
+
+sartAdx = adx[1]<adx and efi>0 
+sartAdxSon = sartAdx and sartAdx[1]==false
+//plotshape(sartAdxSon , title ='AL Fırsatı İşareti', text='', style=shape.triangleup, location=location.bottom, color=color.new(#00e676, 0), offset=0, size=size.tiny)
+alertcondition(sartAdxSon, title = "myEfi AF", message = "myEfi AF {{ticker}}, FİYAT={{close}}")
 
 
 
@@ -451,13 +459,13 @@ if barstate.islast
         myNull = acTabloCep ? '\n' : ''
         
         table.cell(tblHead, 0, 0, a1 +  myNull + ' %' + o1 , text_color = color.white, text_size = mySize, bgcolor=y1 ? color.new(color.lime,50) : color.new(#ff0000,0))
-        table.cell(tblHead, 1, 0, 'x' + myNull + '20', text_color = color.white, text_size = mySize, bgcolor=t1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 1, 0, 'x' + myNull + '21', text_color = color.white, text_size = mySize, bgcolor=t1 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblHead, 2, 0, 'x' + myNull + '2K', text_color = color.white, text_size = mySize, bgcolor=b1 ? color.new(color.lime,50) : color.new(#ff0000,0))
-        table.cell(tblHead, 3, 0, 'Rsi' + myNull + k1, text_color = color.white, text_size = mySize, bgcolor=l1 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 3, 0, 'Rsi ' + myNull + k1, text_color = color.white, text_size = mySize, bgcolor=l1 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblHead, 4, 0, 'DI', text_color = color.white, text_size = mySize, bgcolor=(plus > minus) ? color.new(color.lime,50) : color.new(#ff0000,0))
-        table.cell(tblHead, 5, 0, 'Ad' + myNull + str.tostring(adx,"#"), text_color = color.white, text_size = mySize, bgcolor=(adx>adx[1]) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 5, 0, 'Adx ' + myNull + str.tostring(adx,"#"), text_color = color.white, text_size = mySize, bgcolor=(adx>adx[1]) ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblHead, 6, 0, 'Efi', text_color = color.white, text_size = mySize, bgcolor=(efi>0) ? color.new(color.lime,50) : color.new(#ff0000,0))
-        table.cell(tblHead, 7, 0, 'Al' + myNull + 'tın', text_color = color.white, text_size = mySize, bgcolor=(upward > 0) ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblHead, 7, 0, 'Al' + myNull + 'tın', text_color = color.white, text_size = mySize, bgcolor=(upward > 0) ? color.new(color.lime,50) : filtcolor)
         table.cell(tblHead, 8, 0, 'SQZ' + myNull + 'MOM', text_color = color.white, text_size = mySize, bgcolor=kriterSQZMOM ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblHead, 9, 0, 'VFI', text_color = color.white, text_size = mySize, bgcolor=(vfi > vfima) ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblHead, 10, 0, 'n' + myNull + 'QQE', text_color = color.white, text_size = mySize, bgcolor=(QQEF >= QQES) ? color.new(color.lime,50) : color.new(#ff0000,0))
@@ -535,6 +543,8 @@ if barstate.islast
         table.cell(tblDetay, 5, 7, 'Baraj', text_color = color.white, text_size = size.normal, bgcolor=b07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 6, 7, k07, text_color = color.white, text_size = size.normal, bgcolor=l07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 7, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+
+
 
 
 
