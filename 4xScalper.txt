@@ -1,6 +1,6 @@
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 //@version=5
-indicator(title ="4xScalper", shorttitle = "4xScalper - V1.3.6", overlay=true)
+indicator(title ="4xScalper", shorttitle = "4xScalper - V1.3.7", overlay=true)
 
 xMumKontrol(xMumTip)=>
     string xMA = switch xMumTip
@@ -60,7 +60,7 @@ xMaMumKontrol(xMaMumTip)=>
         
 src = input(close, 'Source', group="Genel Ayarlar")
 
-string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "4 XMA", "Çift Bolinger", "Gelişmiş", "Sade", "Varsayılan"] , group="Genel Ayarlar")
+string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "4 XMA", "Çift Bolinger", "Gelişmiş", "Normal", "Sade", "Varsayılan"] , group="Genel Ayarlar")
 
 
 
@@ -113,6 +113,9 @@ if xKullanim=="Gelişmiş"
     acKama := true
     lengthKama := 68 
     
+    acBb := true
+    bb_Color := color.new(color.yellow, 0)
+    
     acAltinCizgi := true
     
     mavilimnew := false
@@ -133,6 +136,20 @@ if xKullanim=="Çift Bolinger"
 
     acTabloPanoOzet := true
     
+if xKullanim=="Normal"    
+    acxMaCizgisi := true
+    acxMa21Cizgisi := true
+    acxMa50Cizgisi := false
+    acxMa100Cizgisi := false
+    acxMa200Cizgisi := true
+
+    acKama := true
+    lengthKama := 68 
+    
+    acAltinCizgi := true
+    
+    acTabloPanoOzet := true
+
 if xKullanim=="Sade"    
     acxMaCizgisi := false
     acxMa21Cizgisi := false
@@ -336,7 +353,7 @@ myEma_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), myEma_1)
 myH_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), high)
 myL_1S = request.security(syminfo.tickerid, xMumKontrol(xReMum1), low)
 
-acRsiEmaLW_1S = input.int(defval = 2, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
+acRsiEmaLW_1S = input.int(defval = 3, title = 'Rsi/Ema Çizgisi Kalınlığı Sayısal Değeri', group="Rsi/Ema 1 Değerleri") 
 acRsiEma_1S = input(defval = true, title = 'Rsi/Ema Çizgisi Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 acREIsaretler_1S = input(defval = false, title = 'Renk İşaretleri Gösterilsin mi?', group="Rsi/Ema 1 Değerleri") 
 
@@ -397,7 +414,7 @@ my4D_2S = input.color(color.new(#880E4F, 0)  , "Aşırı Satım Bölgesinde (en 
 
 
 //KULLANIM
-if xKullanim=="Gelişmiş" or xKullanim=="Sade"  
+if xKullanim=="Gelişmiş" or xKullanim=="Sade" or xKullanim=="Normal" 
     acREIsaretler_2S := true
 
     my4Y_2S := color.new(#00897B, 0) 
@@ -470,7 +487,7 @@ if xKullanim=="Gelişmiş"
     my3D_3S := color.new(color.red, 0) 
     my4D_3S := color.new(#880E4F, 0) 
     
-if xKullanim=="Sade"    
+if xKullanim=="Sade"      
 
     acREIsaretler_3S := true
     
@@ -483,6 +500,21 @@ if xKullanim=="Sade"
     my1D_3S := color.new(color.yellow, 100) 
     my2D_3S := color.new(#ff9800, 100) 
     my3D_3S := color.new(color.red, 100) 
+    my4D_3S := color.new(#880E4F, 0) 
+
+if xKullanim=="Normal"     
+
+    acREIsaretler_3S := true
+    
+    my4Y_3S := color.new(#00897B, 100)  
+    my3Y_3S := color.new(color.green, 100)
+    my2Y_3S := color.new(#00bcd4, 100)
+    my1Y_3S := color.new(color.blue, 0)
+    
+    
+    my1D_3S := color.new(color.yellow, 100) 
+    my2D_3S := color.new(#ff9800, 100) 
+    my3D_3S := color.new(color.red, 0) 
     my4D_3S := color.new(#880E4F, 0) 
 
 
@@ -594,14 +626,10 @@ xMA_200_Color_koyu = color.new(#be660b, 50)
 
 //KULLANIM
 
-if xKullanim=="Gelişmiş" or xKullanim=="Çift Bolinger" or xKullanim=="Sade" or xKullanim=="4 XMA"   
+if xKullanim=="Gelişmiş" or xKullanim=="Çift Bolinger" or xKullanim=="Sade" or xKullanim=="4 XMA" or xKullanim=="Normal"  
     xMA_200_Color := color.new(#00e676, 0)
     xMA_200_Color_koyu := color.new(#ff0000, 0)
-if xKullanim=="4 XMA"
-    xMA_21_Color_koyu := color.new(#ff0000, 0)
-if xKullanim=="Gelişmiş"
-    xMA_21_Color_koyu := color.new(#ff0000, 0)
-if xKullanim=="Çift Bolinger"
+if xKullanim=="4 XMA" or xKullanim=="Gelişmiş" or xKullanim=="Çift Bolinger" or xKullanim=="Normal"
     xMA_21_Color_koyu := color.new(#ff0000, 0)
 
 
@@ -713,6 +741,15 @@ if xKullanim=="Sade"
     acBoyama := true
     myRenkBir := color.new(#00bcd4, 33)
     myRenkIki := color.new(#ff0000, 100)
+
+if xKullanim=="Normal" 
+
+    boyaBir := "Rsi/Ema 1"
+    boyaIki := "Altın Çizgi"
+
+    acBoyama := true
+    myRenkBir := color.new(#00bcd4, 33)
+    myRenkIki := color.new(#ff0000, 50)
 
 
 //BOYAMALAR 1
