@@ -2,8 +2,76 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi - V1.3.2", title="4xEfi")
-acCizgiEFI = input(defval = false, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
+indicator(shorttitle="4xEfi - V1.4.1", title="4xEfi")
+src=close
+
+
+acCizgiEFI = input.bool(defval = true, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
+
+acAltin = input.bool(defval = true, title = "Altın Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
+acSQZMOM = input.bool(defval = true, title = "SQZMOM Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
+acVFI = input.bool(defval = true, title = "VFI Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
+acnQQE = input.bool(defval = true, title = "nQQE Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
+
+
+string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "Gelişmiş", "Mobil", "Sade", "Varsayılan"] , group="Genel Ayarlar")
+
+//TABLO
+acTablo = input(defval = true, title = 'Özet Tablo, Gösterilsin mi?', group="Tablo Ayarları")  
+acTabloCep = input(defval = false, title = 'Özet Tablo, Mobil Uyumlu Olsun mu?', group="Tablo Ayarları")  
+
+acTabloDetay = input(defval = false, title = 'Tablo Detayı, Gösterilsin mi?', group="Tablo Ayarları")  
+
+
+//KULLANIM
+if xKullanim=="Boş"
+    acTabloCep:= false
+    acTablo:=false
+    acTabloDetay:=false
+    
+    acCizgiEFI:=true
+
+    acAltin:=false
+    acSQZMOM:=false
+    acVFI:=false
+    acnQQE:=false
+    
+if xKullanim=="Gelişmiş"
+    acTabloCep:= false
+    acTablo:=true
+    acTabloDetay:=false
+    
+    acCizgiEFI:=true
+
+    acAltin:=true
+    acSQZMOM:=true
+    acVFI:=true
+    acnQQE:=true
+
+if xKullanim=="Mobil"
+    acTabloCep:= true
+    acTablo:=true
+    acTabloDetay:=false
+    
+    acCizgiEFI:=true
+
+    acAltin:=true
+    acSQZMOM:=false
+    acVFI:=false
+    acnQQE:=true
+
+if xKullanim=="Sade"
+    acTabloCep:= false
+    acTablo:=true
+    acTabloDetay:=false
+    
+    acCizgiEFI:=true
+
+    acAltin:=true
+    acSQZMOM:=false
+    acVFI:=false
+    acnQQE:=true
+
 
 demaHesapla(mySrc,len)=>
     ema1 = ta.ema(close, len)
@@ -43,9 +111,6 @@ xMaMumKontrol(xMaMumTip)=>
         "1 Ay" => "M"
         "5 Hafta" => "5W"
         => str.tostring(timeframe.period)
-
-
-src=close
 
 
 
@@ -208,9 +273,12 @@ boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
 
 myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
 //fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
-bgcolor(plus >= minus ?  color.new(color.lime,77) : color.new(color.red,100))
+bgcolor((plus >= minus and upward > 0 and QQEF >= QQES) ?  color.new(color.lime,50) : color.new(color.red,100))
 myColor := (plus >= minus and adx[1]<adx) ?  color.new(color.lime,0) : (efi>=0) ? myColorY : myColorD
-plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
+//plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
+
+
+plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=3, style =plot.style_circles)
 
 
 
@@ -222,25 +290,23 @@ alertcondition(sartAdxSon, title = "myEfi AF", message = "myEfi AF {{ticker}}, F
 
 
 
-zirveCizgiDeger = input.int(50, title = "Zirve Çizgisi (Altın) Seviye Değeri", group="DMI Ayarlar" )
-plot(zirveCizgiDeger, color=filtcolor, title="Zirve Çizgisi (Altın)",linewidth=3)
+zirveCizgiDeger = input.int(13, title = "Zirve Çizgisi (Altın) Seviye Değeri", group="DMI Ayarlar" )
+plot(zirveCizgiDeger and acAltin ? zirveCizgiDeger : na , color=filtcolor, title="Zirve Çizgisi (Altın)",linewidth=3)
 
 
 
-ustCizgiDeger = input.int(35, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
-plot(ustCizgiDeger, color=ColorSQZMOM, title="Üst Çizgisi (SQZMOM)",linewidth=3)
+ustCizgiDeger = input.int(12, title = "Üst Çizgisi (SQZMOM) Seviye Değeri", group="DMI Ayarlar" )
+plot(ustCizgiDeger and acSQZMOM ? ustCizgiDeger : na, color=ColorSQZMOM, title="Üst Çizgisi (SQZMOM)",linewidth=3)
 
 
 myVFIcolor = (vfi > vfima) ? color.new(color.lime,0) : color.new(#ff0000,0)
 
-ortaCizgiDeger = input.int(25, title = "Orta Çizgisi (VFI) Seviye Değeri", group="DMI Ayarlar" )
-plot(ortaCizgiDeger, color=myVFIcolor, title="Orta Çizgisi (VFI)",linewidth=3)
+ortaCizgiDeger = input.int(11, title = "Orta Çizgisi (VFI) Seviye Değeri", group="DMI Ayarlar" )
+plot(ortaCizgiDeger and acVFI ? ortaCizgiDeger : na , color=myVFIcolor, title="Orta Çizgisi (VFI)",linewidth=3)
 
 
-altCizgiDeger = input.int(15, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
-plot(altCizgiDeger, color=myNQQE, title="Alt Çizgisi (nQQE)",linewidth=3)
-
-
+altCizgiDeger = input.int(10, title = "Alt Çizgisi (nQQE) Seviye Değeri", group="DMI Ayarlar" )
+plot(altCizgiDeger and acnQQE ? altCizgiDeger : na, color=myNQQE, title="Alt Çizgisi (nQQE)",linewidth=3)
 
 
 
@@ -258,6 +324,9 @@ M3 = ta.wma(M2, tmal)
 M4 = ta.wma(M3, Fmal)
 M5 = ta.wma(M4, Ftmal)
 MAVW = ta.wma(M5, Smal)
+
+
+
 
 
 //TREND
@@ -284,11 +353,6 @@ xMA_200Src = request.security(syminfo.tickerid,xMaMum200Src, xMA_200)
 
 
 
-//TABLO
-acTablo = input(defval = true, title = 'Özet Tablo, Gösterilsin mi?', group="Pano Ayarları")  
-acTabloCep = input(defval = true, title = 'Özet Tablo, Cep Uyumlu Olsun mu?', group="Pano Ayarları")  
-
-acTabloDetay = input(defval = true, title = 'Tablo Detayı, Gösterilsin mi?', group="Pano Ayarları")  
 
 
 //Filtre Trend
