@@ -2,9 +2,8 @@
 // © ozcanozbek
 
 //@version=5
-indicator(shorttitle="4xEfi - V1.6.1", title="4xEfi")
+indicator(shorttitle="4xEfi - V1.6.3", title="4xEfi")
 src=close
-
 
 acCizgiEFI = input.bool(defval = true, title = 'ADX Çizgisi Gösterilsin mi?', group="Genel Ayarlar")  
 
@@ -13,6 +12,7 @@ acSQZMOM = input.bool(defval = true, title = "SQZMOM Çizgisi Gözterilsin mi?",
 acVFI = input.bool(defval = true, title = "VFI Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
 acnQQE = input.bool(defval = true, title = "nQQE Çizgisi Gözterilsin mi?", group="Genel Ayarlar")
 
+acMumRenk = input(false, title='Mumlar Renklensin mi?', group="Genel Ayarlar")
 
 string xKullanim = input.string(defval = "Varsayılan", title = "Kullanım Ayarları" ,options=["Boş", "Gelişmiş", "Mobil", "Sade", "Varsayılan"] , group="Genel Ayarlar")
 
@@ -119,11 +119,13 @@ lengthMFI = input.int(title="Uzunluk", defval=14, minval=1, maxval=2000, group="
 srcMFI = hlc3
 myMFI = ta.mfi(srcMFI, lengthMFI)
 
+
+
+
 //Altın Çizgisi
 srcAltin = input(defval=hlcc4, title='Source', group="Altın Çizgi Ayarları")
 per = input.int(defval=230, minval=1, title='Örnekleme periyodu', group="Altın Çizgi Ayarları")
 multA = input.float(defval=2.0, minval=0.1, title='Aralık carpanı', group="Altın Çizgi Ayarları")
-
 
 smoothrng(x, t, m) =>
     wper = t * 2 - 1
@@ -146,7 +148,8 @@ downward := filt < filt[1] ? nz(downward[1]) + 1 : filt > filt[1] ? 0 : nz(downw
 
 
 // Colors
-filtcolor = upward > 0 ? color.new(color.lime,0) : downward > 0 ? color.new(#ff0000,0) : color.new(color.orange,0) 
+fColour = color.new(color.orange,0) 
+filtcolor = upward > 0 ? color.new(color.lime,0) : downward > 0 ? color.new(#ff0000,0) : fColour
 //filtplot = plot(filt and acAltinCizgi ? filt : na, color=filtcolor, linewidth=3, title='Altın Cizgisi')
 
 
@@ -253,6 +256,36 @@ vfima = ta.ema(vfi, signalLength)
 d = vfi - vfima
 
 
+//VBCB
+
+//acMumRenk = input(true, title='Mumlar Hacime Göre Renklensin mi?', group="VBCB Ayarları")
+
+lengthVbcb = input.int(21, 'length', minval=1)
+avrg = ta.sma(volume, lengthVbcb)
+
+vold1 = volume > avrg * 1.5 and close < open
+vold2 = volume >= avrg * 0.5 and volume <= avrg * 1.5 and close < open
+vold3 = volume < avrg * 0.5 and close < open
+
+volu1 = volume > avrg * 1.5 and close > open
+volu2 = volume >= avrg * 0.5 and volume <= avrg * 1.5 and close > open
+volu3 = volume < avrg * 0.5 and close > open
+
+
+cold1 = #800000
+cold2 = #FF0000
+cold3 = #ffeb3b
+
+
+colu1 = #006400
+colu2 = #00FF00
+colu3 = #7FFFD4
+
+
+color_1 = vold1 ? cold1 : vold2 ? cold2 : vold3 ? cold3 : volu1 ? colu1 : volu2 ? colu2 : volu3 ? colu3 : na
+
+
+
 //DMI 
 lensig = input.int(14, title="ADX Smoothing", minval=1, maxval=50, group="DMI Ayarlar")
 len = input.int(14, minval=1, title="DI Length", group="DMI Ayarlar")
@@ -275,7 +308,10 @@ boyaAdx = efi>0 ? color.new(color.white,0) : color.new(#ff0000,0)
 
 myBoya = plus >= minus ? color.new(color.lime,60) : color.new(color.red,66) 
 //fill(pPlus, pMinus , title = 'DI+ Bölge', color = myBoya, fillgaps = true)
-bgcolor((plus >= minus and upward > 0 and QQEF >= QQES) ?  color.new(color.lime,50) : color.new(color.red,100))
+bgcolor((plus >= minus and (upward > 0 or filtcolor == fColour ) and QQEF >= QQES) ?  color.new(#00bcd4,30)  : (plus < minus and (upward > 0 or filtcolor == fColour ) and QQEF >= QQES)  ? color.new(color.yellow,30)  : color.new(color.red,100))
+barcolor(acMumRenk and (plus >= minus and (upward > 0 or filtcolor == fColour ) and QQEF >= QQES) ? color.new(#00bcd4,0) : acMumRenk and (plus < minus and (upward > 0 or filtcolor == fColour ) and QQEF >= QQES)  ? color.new(color.yellow,0) : acMumRenk ? filtcolor : na)
+
+
 myColor := (plus >= minus and adx[1]<adx) ?  color.new(color.lime,0) : (efi>=0) ? myColorY : myColorD
 //plot(adx and acCizgiEFI? adx : na, color=myColor, title="Elders Force Index",linewidth=2, style =plot.style_circles)
 
@@ -457,7 +493,7 @@ sart = kosullarTrend and kosullarVolatilite and kosullarMomentum
 
 //Formül
 //customFunc() => [sart, str.tostring(math.round(close[1],2),"#.00"), str.tostring(math.round(close,2),"#.00"), str.tostring(math.round(((close-close[1])/close[1])*100,2)), close-close[1]>=0, (sart[1]==false and sart==true), str.tostring(ta.rsi(close,myRsiD),"#"), ta.rsi(close,myRsiD)>ta.ema(ta.rsi(close,myRsiD), myEmaD), (close > xMaKontrol(xMaTip21, close, length2a)), close > xMaKontrol(xMaTip200, close, length4a), str.tostring(ta.mfi(hlc3, lengthMFI),"#.00"), ta.mfi(hlc3, lengthMFI), ta.mfi(hlc3[1], lengthMFI)]
-customFunc() => [sart, str.tostring(math.round(close[1],2),"#.00"), str.tostring(math.round(close,2),"#.00"), str.tostring(math.round(((close-close[1])/close[1])*100,2)), close-close[1]>=0, (sart[1]==false and sart==true), str.tostring(ta.rsi(close,myRsiD),"#"), ta.rsi(close,myRsiD)>ta.ema(ta.rsi(close,myRsiD), myEmaD), (close > xMaKontrol(xMaTip21, close, length2a)), close > xMaKontrol(xMaTip200, close, length4a), str.tostring(ta.mfi(hlc3, lengthMFI),"#.00"), ta.mfi(hlc3, lengthMFI) > ta.mfi(hlc3[1], lengthMFI)]
+customFunc() => [sart, str.tostring(math.round(close[1],2),"#.00"), str.tostring(math.round(close,2),"#.00"), str.tostring(math.round(((close-close[1])/close[1])*100,2)), close-close[1]>=0, (sart[1]==false and sart==true), str.tostring(ta.rsi(close,myRsiD),"#"), ta.rsi(close,myRsiD)>ta.ema(ta.rsi(close,myRsiD), myEmaD), (close > xMaKontrol(xMaTip21, close, length2a)), close > xMaKontrol(xMaTip200, close, length4a), str.tostring(ta.mfi(hlc3, lengthMFI),"#"), ta.mfi(hlc3, lengthMFI) > ta.mfi(hlc3[1], lengthMFI)]
 
 
 
@@ -513,8 +549,8 @@ kMetin =  (timeframe.period == "1S" or timeframe.period == "5S") ? "5 Saniye" : 
 var table tblHead = table.new(position.top_right, 13, 1, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white , border_width=1)
 table.clear(tblHead, 0, 0, 12, 0)
 
-var table tblDetay = table.new(position.bottom_left, 9, 10, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
-table.clear(tblDetay, 0, 0, 8, 9)
+var table tblDetay = table.new(position.bottom_left, 10, 10, bgcolor = color.black, frame_width = 1, frame_color = color.white, border_color = color.white, border_width=0)
+table.clear(tblDetay, 0, 0, 9, 9)
 
 
 if barstate.islast
@@ -561,6 +597,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 0, "RSI", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
         table.cell(tblDetay, 7, 0, "MFI", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
         table.cell(tblDetay, 8, 0, "Alarm", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
+        table.cell(tblDetay, 9, 0, "Kriter", text_color = color.white, text_size = size.normal, bgcolor=color.maroon)
         
         table.cell(tblDetay, 0, 1, kMetin , text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 1, e00, text_color = color.white, text_size = size.small)
@@ -571,6 +608,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 1, k00, text_color = color.white, text_size = size.normal, bgcolor=l00 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 1, mfi00, text_color = color.white, text_size = size.normal, bgcolor=mfl00 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 1, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z00 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 1, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s00 ? color.new(color.lime,50) : color.new(#ff0000,0))
 
         table.cell(tblDetay, 0, 2, "1 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 2, e01, text_color = color.white, text_size = size.small)
@@ -581,6 +619,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 2, k01, text_color = color.white, text_size = size.normal, bgcolor=l01 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 2, mfi01, text_color = color.white, text_size = size.normal, bgcolor=mfl01 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 2, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z01 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 2, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s01 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 3, "5 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 3, e02, text_color = color.white, text_size = size.small)
@@ -591,6 +630,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 3, k02, text_color = color.white, text_size = size.normal, bgcolor=l02 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 3, mfi02, text_color = color.white, text_size = size.normal, bgcolor=mfl02 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 3, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z02 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 3, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s02 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 4, "15 Dakika", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 4, e03, text_color = color.white, text_size = size.small)
@@ -601,6 +641,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 4, k03, text_color = color.white, text_size = size.normal, bgcolor=l03 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 4, mfi03, text_color = color.white, text_size = size.normal, bgcolor=mfl03 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 4, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z03 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 4, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s03 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 5, "2 Saat", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 5, e04, text_color = color.white, text_size = size.small)
@@ -611,6 +652,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 5, k04, text_color = color.white, text_size = size.normal, bgcolor=l04 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 5, mfi04, text_color = color.white, text_size = size.normal, bgcolor=mfl04 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 5, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z04 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 5, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s04 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 6, "4 Saat", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 6, e05, text_color = color.white, text_size = size.small)
@@ -621,6 +663,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 6, k05, text_color = color.white, text_size = size.normal, bgcolor=l05 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 6, mfi05, text_color = color.white, text_size = size.normal, bgcolor=mfl05 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 6, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z05 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 6, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s05 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 7, "1 Gün", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 7, e06, text_color = color.white, text_size = size.small)
@@ -631,6 +674,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 7, k06, text_color = color.white, text_size = size.normal, bgcolor=l06 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 7, mfi06, text_color = color.white, text_size = size.normal, bgcolor=mfl06 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 7, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z06 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 7, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s06 ? color.new(color.lime,50) : color.new(#ff0000,0))
     
         table.cell(tblDetay, 0, 8, "1 Hafta", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 8, e07, text_color = color.white, text_size = size.small)
@@ -641,6 +685,7 @@ if barstate.islast
         table.cell(tblDetay, 6, 8, k07, text_color = color.white, text_size = size.normal, bgcolor=l07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 8, mfi07, text_color = color.white, text_size = size.normal, bgcolor=mfl07 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 8, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z07 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 8, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s07 ? color.new(color.lime,50) : color.new(#ff0000,0))
 
         table.cell(tblDetay, 0, 9, "1 Ay", text_color = color.white, text_size = size.normal, bgcolor=color.teal)
         table.cell(tblDetay, 1, 9, e08, text_color = color.white, text_size = size.small)
@@ -651,6 +696,8 @@ if barstate.islast
         table.cell(tblDetay, 6, 9, k08, text_color = color.white, text_size = size.normal, bgcolor=l08 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 7, 9, mfi08, text_color = color.white, text_size = size.normal, bgcolor=mfl08 ? color.new(color.lime,50) : color.new(#ff0000,0))
         table.cell(tblDetay, 8, 9, 'Alarm', text_color = color.white, text_size = size.normal, bgcolor=z08 ? color.new(color.lime,50) : color.new(#ff0000,0))
+        table.cell(tblDetay, 9, 9, 'Kriter', text_color = color.white, text_size = size.normal, bgcolor=s08 ? color.new(color.lime,50) : color.new(#ff0000,0))
+
 
 
 
